@@ -1,0 +1,3 @@
+/home/elirodegher/progetto2024/build/CMakeFiles/boids.dir
+/home/elirodegher/progetto2024/build/CMakeFiles/edit_cache.dir
+/home/elirodegher/progetto2024/build/CMakeFiles/rebuild_cache.dir
