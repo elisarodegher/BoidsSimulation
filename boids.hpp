@@ -31,6 +31,7 @@ namespace bds
 
         void vel_mod(couple s);
         void pos_mod(double deltat);
+        void pos_mod(couple p);
         couple pos() const;
         couple vel() const; // funzioni che uso per cavare fuori velocità e posizione dal boid
     };
@@ -45,7 +46,7 @@ namespace bds
     couple v_alignment(lu_int i, double alig_fact, std::vector<boid> boid_vector);
     couple v_coesion(lu_int i, double dist_vic, double coes_fact, std::vector<boid> boid_vector);
     void v_mod(lu_int i, double sep_fact, double sep_dist, double alig_fact, double dist_vic, double coes_fact, std::vector<boid> &boid_vector);
-    void p_mod(lu_int i, std::vector<boid> boid_vector, double deltat);
+    void p_mod(lu_int i, std::vector<boid>& boid_vector, double deltat);
 
     double GetMeanDistance(std::vector<boid> boid_vector, double sep_dist);
     double GetMeanVelocity(std::vector<boid> boid_vector);
@@ -54,4 +55,3 @@ namespace bds
 }
 
 void Pacman(std::vector<bds::boid> &boid_vector, double field_width, double field_height);
-

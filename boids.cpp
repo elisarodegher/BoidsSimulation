@@ -34,8 +34,8 @@ bds::boid::boid(couple p, couple s) : pos_{p}, vel_{s} {} // costruttore di base
 bds::boid::boid() : pos_{0., 0.}, vel_{0., 0.} {}         // costruttore senza parametri, adesso restituisce boid fermi all'origine ma va implementato con la funzione random
 
 void bds::boid::vel_mod(couple s)
-{
-    vel_ = s + vel_; // si dovrebbe implementare l'operatore +=, credo che a giacomini piaccia
+{   
+    vel_ = vel_ + s; // si dovrebbe implementare l'operatore +=, credo che a giacomini piaccia
 } // modifica la velocità dato in input un array di "modifica" chiamato "s"; vel_ è un membro privato della classe boid.
 
 void bds::boid::pos_mod(double deltat)
@@ -44,6 +44,9 @@ void bds::boid::pos_mod(double deltat)
 } // modifica la posizione, i parametri di velocità sono presi dal corpo della funzione; la posizione non può essere (per come è messa ora) modificata a piacere
 // posizione viene modificata aggiungendo la velocità moltiplicata per delta t (tempo)
 // assert sono da inserire nel ciclo for e nel costruttore
+void bds::boid::pos_mod(couple p) {
+    pos_ = pos_ + p;
+}
 
 couple bds::boid::pos() const { return pos_; }
 couple bds::boid::vel() const { return vel_; } // funzioni che uso per cavare fuori velocità e posizione dal boid
@@ -103,10 +106,10 @@ couple bds::v_separation(lu_int i, double sep_dist, double sep_fact, std::vector
             {                                           // se il boid j è vicino al boid i ... applico il controllo dei vicini con la distanza di separazione
                 v_sep = v_sep + (j_boid.pos() - i_boid.pos());
             }
-        }
-
-        v_sep = (-1 * sep_fact) * v_sep; // fattore di separazione negativo??
+        }// fattore di separazione negativo??
     }
+
+    v_sep = (-1 * sep_fact) * v_sep;
     return v_sep;
 } // regola di separazione
 // ==> restituisce un array di coordinate di velocità
@@ -150,20 +153,24 @@ couple bds::v_coesion(lu_int i, double dist_vic, double coes_fact, std::vector<b
             ++near_boids;
         }
     }
+    couple v_coes{0., 0.};
+    if (near_boids == 1) {
+        return v_coes;
+    } else {
     c_mass = (1. / static_cast<double>(near_boids - 1)) * c_mass; // come prima static cast
     // ho sommato tutti i boid vicini ma quello iniziale è escluso: ho la posizione del centro di massa - la posizione del primo
-
-    couple v_coes = coes_fact * c_mass;
-    return v_coes;
+    v_coes = coes_fact * c_mass;
+    return v_coes;}
 } // regola di coesione ==> restituisce un array di coordinate di velocità
 
-void bds::v_mod(lu_int i, double sep_fact, double sep_dist, double alig_fact, double dist_vic, double coes_fact, std::vector<boid> &boid_vector)
+void bds::v_mod(lu_int i, double sep_fact, double sep_dist, double alig_fact, double dist_vic, double coes_fact, std::vector<boid>& boid_vector)
 {
     couple v_mod = v_separation(i, sep_dist, sep_fact, boid_vector) + v_alignment(i, alig_fact, boid_vector) + v_coesion(i, dist_vic, coes_fact, boid_vector);
-    boid_vector[i].vel_mod(v_mod); // la velocità del boid viene modificata dalla funzione vel_mod a cui viene dato in input l'array v_mod precedentemente "creato"
+    boid_vector[i].vel_mod(v_mod);
+// la velocità del boid viene modificata dalla funzione vel_mod a cui viene dato in input l'array v_mod precedentemente "creato"
 } // funzione che applica le modifiche di velocità legate alle regole al boid stesso, va iterata nel ciclo for per ogni boid
 
-void bds::p_mod(lu_int i, std::vector<boid> boid_vector, double deltat)
+void bds::p_mod(lu_int i, std::vector<boid>& boid_vector, double deltat)
 {
     boid_vector[i].pos_mod(deltat);
 } // funzione che forse non è necessaria, può essere implementata direttamente nel ciclo for; modifica la posizione in base alle velocità
@@ -244,26 +251,26 @@ double bds::GetStdDevVelocity(std::vector<boid> boid_vector)
 
 void Pacman(std::vector<bds::boid> &boid_vector, double field_width, double field_height)
 {
-    field_width = 15.;
-    field_height = 10.;
     for (lu_int i{0}; i < boid_vector.size(); i++)
-    {
-        if ((boid_vector[i].pos())[0] < -(field_width / 2))
+    {   
+        couple pac_modifier{0., 0.};
+        if (boid_vector[i].pos()[0] < -(field_width / 2))
         {
-            (boid_vector[i].pos())[0] += field_width;
+            pac_modifier[0] += field_width;
         }
-        if ((boid_vector[i].pos())[0] > (field_width / 2))
+        if (boid_vector[i].pos()[0] > (field_width / 2))
         {
-            (boid_vector[i].pos())[0] -= field_width;
+            pac_modifier[0] -= field_width;
         }
-        if ((boid_vector[i].pos())[1] < -(field_height / 2))
+        if (boid_vector[i].pos()[1] < -(field_height / 2))
         {
-            (boid_vector[i].pos())[1] += field_height;
+            pac_modifier[1] += field_height;
         }
-        if ((boid_vector[i].pos())[1] > (field_height / 2))
+        if (boid_vector[i].pos()[1] > (field_height / 2))
         {
-            (boid_vector[i].pos())[1] -= field_height;
+            pac_modifier[1] -= field_height;
         }
+        boid_vector[i].pos_mod(pac_modifier);
     }
 }
 
