@@ -15,11 +15,11 @@ int main()
 
 double Intervalloditempo;
 
-    std::cout << "Quanti boids vuoi per la simulazione?\n";
+    std::cout << "Number of boids: \n";
     std::cin >> n_boids;
-    std::cout << "Formiscimi la distanza minima sotto la quale i boids si considereranno vicini";
+    std::cout << "Minimum distance for boids to be considered near \n";
     std::cin >> dist_vic;
-    std::cout << "Forniscimi la distanza minima sotto la quale i boids inizieranno a separarsi";
+    std::cout << "Minimum distance for boids to separate \n";
     std::cin >> sep_dist;
      std::cout << "Separation factor: \n";
     std::cin >> sep_fact;
@@ -27,7 +27,7 @@ double Intervalloditempo;
     std::cin >> align_fact;
      std::cout << "Coesion factor: \n";
     std::cin >> coes_fact;
-     std::cout << "Durata della simulazione:\n";
+     std::cout << "Simulation's duration:\n";
     std::cin >> Intervalloditempo;
         
     // esisterà un modo più elegante per fare le domande all'utente? compilazione di una tabella nella parte grafica?
@@ -62,6 +62,6 @@ double Intervalloditempo;
         Pacman(boid_vector, fieldwidth, fieldheight);
     }
 
-    std::cout << "Distanza media tra i boids" << bds::GetMeanDistance(boid_vector, sep_dist) << "+/-" << bds::GetStdDevDistance(boid_vector, sep_dist) << "\n";
-    std::cout << "Velocità media dei boids" << bds::GetMeanVelocity(boid_vector) << "+/-" << bds::GetStdDevVelocity(boid_vector) << "\n";
+    std::cout << "Mean Distance: " << bds::GetMeanDistance(boid_vector, sep_dist) << "+/-" << bds::GetStdDevDistance(boid_vector, sep_dist) << "\n";
+    std::cout << "Mean Velocity: " << bds::GetMeanVelocity(boid_vector) << "+/-" << bds::GetStdDevVelocity(boid_vector) << "\n";
 }
