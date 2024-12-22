@@ -19,7 +19,16 @@ int main()
 
     double time_interval;
 
-    std::cout << "Quanti boids vuoi per la simulazione?\n";
+    n_boids = 67;
+    dist_vic = 6.; 
+    sep_dist = 0.5;
+    sep_fact = 0.6; 
+    align_fact = 0.4;
+    coes_fact = 0.09;
+    time_interval = 60;
+
+
+    /*std::cout << "Quanti boids vuoi per la simulazione?\n";
     std::cin >> n_boids;
     std::cout << "Formiscimi la distanza minima sotto la quale i boids si considereranno vicini";
     std::cin >> dist_vic;
@@ -33,7 +42,7 @@ int main()
     std::cin >> coes_fact;
      std::cout << "Durata della simulazione:\n";
     std::cin >> time_interval;
-        
+    */    
     // esisterà un modo più elegante per fare le domande all'utente? compilazione di una tabella nella parte grafica?
 
     std::default_random_engine eng(static_cast<lu_int>(std::time(nullptr)));
@@ -76,26 +85,33 @@ int main()
         sky.clear(sf::Color::Blue);
 
         for (lu_int i = 0; i < boid_vector.size(); ++i)
-        {       
+        {   
             sf::ConvexShape boid;
             boid.setPointCount(3);
-            boid.setPoint(0, sf::Vector2f(4.f, 0.f));
-            boid.setPoint(1, sf::Vector2f(8.f, 14.f));
-            boid.setPoint(2, sf::Vector2f(0.f, 14.f));
+            boid.setPoint(0, sf::Vector2f(0.f, 0.f));
+            boid.setPoint(1, sf::Vector2f(9.f, 3.f));
+            boid.setPoint(2, sf::Vector2f(0.f, 6.f));
             boid.setFillColor(sf::Color::Black);
-            boid.setOrigin(-450.f, -300.f);
+            
+            boid.setOrigin(3.f, 3.f);
+            boid.setPosition(450., 300.);
 
             v_mod(i, sep_fact, sep_dist, align_fact, dist_vic, coes_fact, boid_vector);
+            double angle_rad = boid_vector[i].get_angle();
+            double angle_deg = angle_rad * (180 / 3.1415);
+            boid.rotate(angle_deg);
+
             p_mod(i, boid_vector, Deltat);
-            Pacman(boid_vector, fieldwidth, fieldheight);
+            Pacman(boid_vector, i, fieldwidth, fieldheight);
             couple gr_pos = boid_vector[i].pos();
             gr_pos = 60 * gr_pos;
+            boid.move(gr_pos[0], gr_pos[1]);
 
-            boid.setPosition(gr_pos[0], gr_pos[1]);
             sky.draw(boid);
         }
         
         sky.display();
+
         }
 
     if (bds::GetMeanVelocity(boid_vector) > std::numeric_limits<double>::max()) {

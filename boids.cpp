@@ -26,6 +26,9 @@ double squaresum(couple i)
     return (i[0] * i[0] + i[1] * i[1]);
 } // quadrato del modulo (per una coppia "i" di dati in generale)
 
+double dotproduct(couple i, couple j) {
+    return(i[0] * j[0] + i[1] * j[1]);
+}
 /* METODI DELLA CLASSE BOID */
 // bds è l'array
 // boid è la classe e anche il costruttore
@@ -50,6 +53,17 @@ void bds::boid::pos_mod(couple p) {
 
 couple bds::boid::pos() const { return pos_; }
 couple bds::boid::vel() const { return vel_; } // funzioni che uso per cavare fuori velocità e posizione dal boid
+double bds::boid::get_angle() const {
+    double angle;
+    double alfa;
+    alfa = atan(vel_[1] / vel_[0]);
+    if (vel_[0] > 0) {
+        angle = alfa;
+    } else {
+        angle = 3.1415 + alfa;
+    }
+    return angle;
+}
 
 /* FUNZIONI LIBERE */
 
@@ -249,10 +263,8 @@ double bds::GetStdDevVelocity(std::vector<boid> boid_vector)
     return stddev;
 } // come prima
 
-void Pacman(std::vector<bds::boid> &boid_vector, double field_width, double field_height)
-{
-    for (lu_int i{0}; i < boid_vector.size(); i++)
-    {   
+void Pacman(std::vector<bds::boid> &boid_vector, lu_int i, double field_width, double field_height)
+{  
         couple pac_modifier{0., 0.};
         if (boid_vector[i].pos()[0] < -(field_width / 2))
         {
@@ -271,7 +283,7 @@ void Pacman(std::vector<bds::boid> &boid_vector, double field_width, double fiel
             pac_modifier[1] -= field_height;
         }
         boid_vector[i].pos_mod(pac_modifier);
-    }
+    
 }
 
 

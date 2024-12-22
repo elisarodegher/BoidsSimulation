@@ -17,6 +17,8 @@ couple operator*(double scal, couple const &vet);
 
 double squaresum(couple i);
 
+double dotproduct(couple i, couple j);
+
 namespace bds
 { // questo namespace contiene ogni funzione o classe o cosa relativa ai boid (bds sta per boids)
     class boid
@@ -33,7 +35,8 @@ namespace bds
         void pos_mod(double deltat);
         void pos_mod(couple p);
         couple pos() const;
-        couple vel() const; // funzioni che uso per cavare fuori velocità e posizione dal boid
+        couple vel() const; 
+        double get_angle() const;// funzioni che uso per cavare fuori velocità e posizione dal boid
     };
 
     double squaredistance(boid i);
@@ -54,4 +57,4 @@ namespace bds
     double GetStdDevVelocity(std::vector<boid> boid_vector);
 }
 
-void Pacman(std::vector<bds::boid> &boid_vector, double field_width, double field_height);
+void Pacman(std::vector<bds::boid> &boid_vector, lu_int i, double field_width, double field_height);
