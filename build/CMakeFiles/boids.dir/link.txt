@@ -1,1 +1,0 @@
-/usr/bin/c++  -fsanitize=address -fsanitize=undefined CMakeFiles/boids.dir/mainprova.cpp.o CMakeFiles/boids.dir/boids.cpp.o -o bin/boids  /usr/lib/x86_64-linux-gnu/libsfml-graphics.so.2.5.1 /usr/lib/x86_64-linux-gnu/libsfml-window.so.2.5.1 /usr/lib/x86_64-linux-gnu/libsfml-system.so.2.5.1 

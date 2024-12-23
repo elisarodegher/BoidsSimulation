@@ -5,3 +5,4 @@ bin/
 cmake_install.cmake
 build/bin/
 boids 
+build/
