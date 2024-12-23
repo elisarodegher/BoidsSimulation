@@ -1,20 +1,28 @@
 cmake_minimum_required(VERSION 3.10) # Versione minima di CMake
 project(BdsSimulation) # Nome del progetto
 
+
+#specifica che l'eseguibile binario va nella cartella bin 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+
+
+# Attiva debug e AddressSanitizer
+set(SANITIZE_FLAGS "-fsanitize=address,undefined -g -D_GLIBCXX_ASSERTIONS")
+
+# Aggiungi i flag globali
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SANITIZE_FLAGS}")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${SANITIZE_FLAGS}")
+
+
 # Aggiungi i file sorgenti
 set(SOURCES
     maingraph.cpp
-    boids.hpp
     boids.cpp
 )
 
+#specifica che l'eseguibile binario va nella cartella bin 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
-set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fsanitize=address")
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=undefined")
-set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fsanitize=undefined")
 
 # Trova la libreria SFML
 find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
@@ -36,8 +44,6 @@ target_compile_options(boids PRIVATE
     -fsanitize=address,undefined
 )
 
-#aggiunta di alcune specifiche per eventuali errori di compilazione
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -g")
 
 # Linka SFML
 target_link_libraries(boids sfml-graphics sfml-window sfml-system)
