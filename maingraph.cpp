@@ -80,7 +80,7 @@ int main()
             sky.close();
         }
 
-        sky.clear(sf::Color::Blue);
+        sky.clear(sf::Color(135, 206, 235));
 
         for (lu_int i = 0; i < boid_vector.size(); ++i)
         {   
