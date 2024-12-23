@@ -3,7 +3,7 @@ project(BdsSimulation) # Nome del progetto
 
 # Aggiungi i file sorgenti
 set(SOURCES
-    mainprova.cpp
+    maingraph.cpp
     boids.hpp
     boids.cpp
 )
