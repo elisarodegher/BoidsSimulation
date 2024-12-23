@@ -177,9 +177,22 @@ couple bds::v_coesion(lu_int i, double dist_vic, double coes_fact, std::vector<b
     return v_coes;}
 } // regola di coesione ==> restituisce un array di coordinate di velocità
 
+couple bds::v_random() {
+    std::random_device rndm;
+    std::default_random_engine eng(rndm());
+    std::uniform_real_distribution<double> angle(0., 6.2830);
+    std::uniform_real_distribution<double> vel(0., 1.);
+
+    couple v_rndm{0., 0.};
+    v_rndm[0] = 0.2 * cos (angle(eng));
+    v_rndm[1] = 0.2 * sin (angle(eng)); //da capire se ha senso metterla in relazione alle altre
+    
+    return v_rndm;
+}
+
 void bds::v_mod(lu_int i, double sep_fact, double sep_dist, double alig_fact, double dist_vic, double coes_fact, std::vector<boid>& boid_vector)
 {
-    couple v_mod = v_separation(i, sep_dist, sep_fact, boid_vector) + v_alignment(i, alig_fact, boid_vector) + v_coesion(i, dist_vic, coes_fact, boid_vector);
+    couple v_mod = v_separation(i, sep_dist, sep_fact, boid_vector) + v_alignment(i, alig_fact, boid_vector) + v_coesion(i, dist_vic, coes_fact, boid_vector) + v_random();
     boid_vector[i].vel_mod(v_mod);
 // la velocità del boid viene modificata dalla funzione vel_mod a cui viene dato in input l'array v_mod precedentemente "creato"
 } // funzione che applica le modifiche di velocità legate alle regole al boid stesso, va iterata nel ciclo for per ogni boid
@@ -263,7 +276,7 @@ double bds::GetStdDevVelocity(std::vector<boid> boid_vector)
     return stddev;
 } // come prima
 
-void Pacman(std::vector<bds::boid> &boid_vector, lu_int i, double field_width, double field_height)
+void bds::Pacman(std::vector<bds::boid> &boid_vector, lu_int i, double field_width, double field_height)
 {  
         couple pac_modifier{0., 0.};
         if (boid_vector[i].pos()[0] < -(field_width / 2))

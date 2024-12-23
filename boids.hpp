@@ -3,7 +3,9 @@
 #include <vector>
 #include <cassert>
 #include <numeric>
-#include <cmath> //cose che vanno a finire anche nel sorgente
+#include <cmath> 
+#include <random>
+#include <ctime>//cose che vanno a finire anche nel sorgente
 
 using couple = std::array<double, 2>;
 using lu_int = long unsigned int; // ho messo questi due alias perchè scrivere ogni volta i nomi originali diventa un suicidio
@@ -48,6 +50,7 @@ namespace bds
     couple v_separation(lu_int i, double sep_dist, double sep_fact, std::vector<boid> boid_vector);
     couple v_alignment(lu_int i, double alig_fact, std::vector<boid> boid_vector);
     couple v_coesion(lu_int i, double dist_vic, double coes_fact, std::vector<boid> boid_vector);
+    couple v_random();
     void v_mod(lu_int i, double sep_fact, double sep_dist, double alig_fact, double dist_vic, double coes_fact, std::vector<boid> &boid_vector);
     void p_mod(lu_int i, std::vector<boid>& boid_vector, double deltat);
 
@@ -55,6 +58,7 @@ namespace bds
     double GetMeanVelocity(std::vector<boid> boid_vector);
     double GetStdDevDistance(std::vector<boid> boid_vector, double sep_dist);
     double GetStdDevVelocity(std::vector<boid> boid_vector);
+    void Pacman(std::vector<bds::boid> &boid_vector, lu_int i, double field_width, double field_height);
 }
 
-void Pacman(std::vector<bds::boid> &boid_vector, lu_int i, double field_width, double field_height);
+
