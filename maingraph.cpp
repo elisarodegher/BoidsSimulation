@@ -94,13 +94,16 @@ int main()
             boid.setOrigin(3.f, 3.f);
             boid.setPosition(450., 300.);
 
-            v_mod(i, sep_fact, sep_dist, align_fact, dist_vic, coes_fact, boid_vector);
+            // std::cout << "Before teleport: Position = (" << boid_vector[i].pos()[0] << ", " << boid_vector[i].pos()[1] << "), Velocity = (" << boid_vector[i].vel()[0] << ", " << boid_vector[i].vel()[1] << ")\n";
+
+            v_mod(i, sep_fact, sep_dist, align_fact, dist_vic, coes_fact, boid_vector, fieldwidth, fieldheight);
             double angle_rad = boid_vector[i].get_angle();
             double angle_deg = angle_rad * (180 / 3.1415);
             boid.rotate(angle_deg);
 
             p_mod(i, boid_vector, Deltat);
             Pacman(boid_vector, i, fieldwidth, fieldheight);
+            // std::cout << "After teleport: Position = (" << boid_vector[i].pos()[0] << ", " << boid_vector[i].pos()[1] << "), Velocity = (" << boid_vector[i].vel()[0] << ", " << boid_vector[i].vel()[1] << ")\n";
             couple gr_pos = boid_vector[i].pos();
             gr_pos = 60 * gr_pos;
             boid.move(gr_pos[0], gr_pos[1]);
@@ -117,7 +120,7 @@ int main()
     }
     else {
 
-    std::cout << "Distanza media tra i boids" << bds::GetMeanDistance(boid_vector, sep_dist) << "+/-" << bds::GetStdDevDistance(boid_vector, sep_dist) << "\n";
+    std::cout << "Distanza media tra i boids" << bds::GetMeanDistance(boid_vector, sep_dist, fieldwidth, fieldheight) << "+/-" << bds::GetStdDevDistance(boid_vector, sep_dist, fieldwidth, fieldheight) << "\n";
     std::cout << "Velocità media dei boids" << bds::GetMeanVelocity(boid_vector) << "+/-" << bds::GetStdDevVelocity(boid_vector) << "\n";
     }
 }

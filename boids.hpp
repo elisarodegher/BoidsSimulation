@@ -42,21 +42,21 @@ namespace bds
     };
 
     double squaredistance(boid i);
-    bool BoidsAreNear(boid i, boid j, double dist);
+    bool BoidsAreNear(boid i, boid j, double dist, double field_width, double field_height);
 
     std::vector<boid> create_boids_vector(lu_int n);
     std::vector<boid> inizialization(lu_int n_boids);
 
-    couple v_separation(lu_int i, double sep_dist, double sep_fact, std::vector<boid> boid_vector);
+    couple v_separation(lu_int i, double sep_dist, double sep_fact, std::vector<boid> boid_vector,double field_width, double field_height);
     couple v_alignment(lu_int i, double alig_fact, std::vector<boid> boid_vector);
-    couple v_coesion(lu_int i, double dist_vic, double coes_fact, std::vector<boid> boid_vector);
+    couple v_coesion(lu_int i, double dist_vic, double coes_fact, std::vector<boid> boid_vector,double field_width, double field_height);
     couple v_random();
-    void v_mod(lu_int i, double sep_fact, double sep_dist, double alig_fact, double dist_vic, double coes_fact, std::vector<boid> &boid_vector);
+    void v_mod(lu_int i, double sep_fact, double sep_dist, double alig_fact, double dist_vic, double coes_fact, std::vector<boid> &boid_vector, double field_width, double field_height);
     void p_mod(lu_int i, std::vector<boid>& boid_vector, double deltat);
 
-    double GetMeanDistance(std::vector<boid> boid_vector, double sep_dist);
+    double GetMeanDistance(std::vector<boid> boid_vector, double sep_dist,double field_width, double field_height);
     double GetMeanVelocity(std::vector<boid> boid_vector);
-    double GetStdDevDistance(std::vector<boid> boid_vector, double sep_dist);
+    double GetStdDevDistance(std::vector<boid> boid_vector, double sep_dist, double field_width, double field_height);
     double GetStdDevVelocity(std::vector<boid> boid_vector);
     void Pacman(std::vector<bds::boid> &boid_vector, lu_int i, double field_width, double field_height);
 }
