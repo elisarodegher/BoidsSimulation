@@ -282,19 +282,20 @@ void bds::Pacman(std::vector<bds::boid> &boid_vector, lu_int i, double field_wid
         if (boid_vector[i].pos()[0] < -(field_width / 2))
         {
             pac_modifier[0] += field_width;
-        }
-        if (boid_vector[i].pos()[0] > (field_width / 2))
+        }else if (boid_vector[i].pos()[0] > (field_width / 2))
         {
             pac_modifier[0] -= field_width;
         }
+
+
         if (boid_vector[i].pos()[1] < -(field_height / 2))
         {
             pac_modifier[1] += field_height;
-        }
-        if (boid_vector[i].pos()[1] > (field_height / 2))
+        } else if (boid_vector[i].pos()[1] > (field_height / 2))
         {
             pac_modifier[1] -= field_height;
         }
+       
         boid_vector[i].pos_mod(pac_modifier);
     
 }

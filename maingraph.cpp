@@ -26,11 +26,11 @@ int main()
     time_interval = 60;
 
 
-    /*std::cout << "Quanti boids vuoi per la simulazione?\n";
+    /*std::cout << "Number of boids: \n";
     std::cin >> n_boids;
-    std::cout << "Formiscimi la distanza minima sotto la quale i boids si considereranno vicini";
+    std::cout << "Minimum distance for boids to be considered near \n";
     std::cin >> dist_vic;
-    std::cout << "Forniscimi la distanza minima sotto la quale i boids inizieranno a separarsi";
+    std::cout << "Minimum distance for boids to separate \n";
     std::cin >> sep_dist;
      std::cout << "Separation factor: \n";
     std::cin >> sep_fact;
@@ -38,7 +38,7 @@ int main()
     std::cin >> align_fact;
      std::cout << "Coesion factor: \n";
     std::cin >> coes_fact;
-     std::cout << "Durata della simulazione:\n";
+     std::cout << "Simulation's duration:\n";
     std::cin >> time_interval;
     */    
     // esisterà un modo più elegante per fare le domande all'utente? compilazione di una tabella nella parte grafica?
