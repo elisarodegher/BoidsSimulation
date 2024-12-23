@@ -167,10 +167,9 @@ couple bds::v_alignment(lu_int i, double alig_fact, std::vector<boid> boid_vecto
             boid j_boid = boid_vector[j];
             v_alig = v_alig + j_boid.vel();
         }
-
-        v_alig = (1. / static_cast<double>(boid_vector.size() - 1) * v_alig);
-        v_alig = v_alig - i_boid.vel();
     }
+    v_alig = (1. / static_cast<double>(boid_vector.size() - 1) * v_alig);
+        v_alig = v_alig - i_boid.vel();
 
     v_alig = alig_fact * v_alig; // conversione da gestire con static_cast
     return v_alig;
@@ -326,9 +325,9 @@ void bds::Pacman(std::vector<bds::boid> &boid_vector, lu_int i, double field_wid
     {
         pac_modifier[1] -= field_height;
     }
-    std::cout << "Before Pacman: Velocity = (" << boid_vector[i].vel()[0] << ", " << boid_vector[i].vel()[1] << ")\n";
+    // std::cout << "Before Pacman: Velocity = (" << boid_vector[i].vel()[0] << ", " << boid_vector[i].vel()[1] << ")\n";
     boid_vector[i].pos_mod(pac_modifier);
-    std::cout << "After Pacman: Velocity = (" << boid_vector[i].vel()[0] << ", " << boid_vector[i].vel()[1] << ")\n";
+   //  std::cout << "After Pacman: Velocity = (" << boid_vector[i].vel()[0] << ", " << boid_vector[i].vel()[1] << ")\n";
 }
 
 /*il programma compila senza warning ma ancora non so se funzioni
