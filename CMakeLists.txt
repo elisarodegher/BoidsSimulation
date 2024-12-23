@@ -36,6 +36,8 @@ target_compile_options(boids PRIVATE
     -fsanitize=address,undefined
 )
 
+#aggiunta di alcune specifiche per eventuali errori di compilazione
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -g")
 
 # Linka SFML
 target_link_libraries(boids sfml-graphics sfml-window sfml-system)
