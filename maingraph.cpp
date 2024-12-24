@@ -17,11 +17,11 @@ int main()
 
     double time_interval;
 
-    n_boids = 67;
+    n_boids = 200;
     dist_vic = 6.; 
     sep_dist = 0.5;
-    sep_fact = 0.6; 
-    align_fact = 0.4;
+    sep_fact = 0.7; 
+    align_fact = 0.1;
     coes_fact = 0.09;
     time_interval = 60;
 
@@ -59,8 +59,8 @@ int main()
     }
     // controllare che non ci siano boids uguali
 
-    double fieldwidth{15.};
-    double fieldheight{10.};
+    double fieldwidth{30.};
+    double fieldheight{20.};
     double Deltat{0.025};
     sf::RenderWindow sky(sf::VideoMode(900, 600), "boidsgraphic", sf::Style::Default);
     sky.setFramerateLimit(40); //questo frame dovrebbe sincronizzarsi col tempo di calcolo
@@ -105,7 +105,7 @@ int main()
             Pacman(boid_vector, i, fieldwidth, fieldheight);
             // std::cout << "After teleport: Position = (" << boid_vector[i].pos()[0] << ", " << boid_vector[i].pos()[1] << "), Velocity = (" << boid_vector[i].vel()[0] << ", " << boid_vector[i].vel()[1] << ")\n";
             couple gr_pos = boid_vector[i].pos();
-            gr_pos = 60 * gr_pos;
+            gr_pos = 30 * gr_pos;
             boid.move(gr_pos[0], gr_pos[1]);
 
             sky.draw(boid);

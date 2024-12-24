@@ -47,21 +47,22 @@ double Intervalloditempo;
         boid_vector.push_back({p, s});
     }
     // controllare che non ci siano boids uguali
-
+    double fieldwidth{15.};
+    double fieldheight{10.};
 
     double Deltat{0.25};
     for (double t = 0; t < Intervalloditempo; t += Deltat)
     {
         for (lu_int i = 0; i < boid_vector.size(); ++i)
         {
-            v_mod(i, sep_fact, sep_dist, align_fact, dist_vic, coes_fact, boid_vector);
+            v_mod(i, sep_fact, sep_dist, align_fact, dist_vic, coes_fact, boid_vector, fieldwidth, fieldheight);
             p_mod(i, boid_vector, Deltat);
+            
+            Pacman(boid_vector, i, fieldwidth, fieldheight);
         }
-        double fieldwidth{15.};
-        double fieldheight{10.};
-        Pacman(boid_vector, fieldwidth, fieldheight);
+        
     }
 
-    std::cout << "Mean Distance: " << bds::GetMeanDistance(boid_vector, sep_dist) << "+/-" << bds::GetStdDevDistance(boid_vector, sep_dist) << "\n";
+    std::cout << "Mean Distance: " << bds::GetMeanDistance(boid_vector, sep_dist, fieldwidth, fieldheight) << "+/-" << bds::GetStdDevDistance(boid_vector, sep_dist, fieldwidth, fieldheight) << "\n";
     std::cout << "Mean Velocity: " << bds::GetMeanVelocity(boid_vector) << "+/-" << bds::GetStdDevVelocity(boid_vector) << "\n";
 }
