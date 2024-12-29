@@ -17,12 +17,12 @@ int main()
 
     double time_interval;
 
-    n_boids = 200;
+    n_boids = 100;
     dist_vic = 6.; 
     sep_dist = 0.5;
-    sep_fact = 0.7; 
-    align_fact = 0.1;
-    coes_fact = 0.09;
+    sep_fact = 0.07; 
+    align_fact = 0.01;
+    coes_fact = 0.009;
     time_interval = 60;
 
 
