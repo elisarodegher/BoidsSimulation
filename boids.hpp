@@ -1,4 +1,5 @@
 #include "operators.hpp"
+#include <SFML/Graphics.hpp>
 
 namespace bds
 { // questo namespace contiene ogni funzione o classe o cosa relativa ai boid (bds sta per boids)
@@ -28,11 +29,25 @@ namespace bds
     couple v_separation(lu_int i, double sep_dist, double sep_fact, std::vector<boid> boid_vector,double field_width, double field_height);
     couple v_alignment(lu_int i, double alig_fact, std::vector<boid> boid_vector);
     couple v_coesion(lu_int i, double dist_vic, double coes_fact, std::vector<boid> boid_vector,double field_width, double field_height);
-    couple v_random();
+    couple v_random(double rndm_mod);
     void v_mod(lu_int i, double sep_fact, double sep_dist, double alig_fact, double dist_vic, double coes_fact, std::vector<boid> &boid_vector, double field_width, double field_height);
     void p_mod(lu_int i, std::vector<boid>& boid_vector, double deltat);
     
     void Pacman(std::vector<bds::boid> &boid_vector, lu_int i, double field_width, double field_height);
+
+    class GraphicBoids {
+        private:
+        sf::ConvexShape sup;
+        sf::ConvexShape inf;
+
+        public:
+        GraphicBoids();
+        void move(double x, double y);
+        void rotate(double ang);
+        void setPosition(double x, double y);
+        void draw(sf::RenderWindow& window);
+
+    };
 }
 
 

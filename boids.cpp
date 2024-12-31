@@ -168,7 +168,7 @@ couple bds::v_coesion(lu_int i, double dist_vic, double coes_fact, std::vector<b
     }
 }
 
-couple bds::v_random()
+couple bds::v_random(double rndm_mod)
 {
     std::random_device rndm;
     std::default_random_engine eng(rndm());
@@ -176,28 +176,63 @@ couple bds::v_random()
     std::uniform_real_distribution<double> vel(0., 1.);
 
     couple v_rndm{0., 0.};
-    v_rndm[0] = 0.2 * cos(angle(eng));
-    v_rndm[1] = 0.2 * sin(angle(eng)); // da capire se ha senso metterla in relazione alle altre
+    v_rndm[0] = rndm_mod * cos(angle(eng));
+    v_rndm[1] = rndm_mod * sin(angle(eng)); // da capire se ha senso metterla in relazione alle altre
 
     return v_rndm;
 }
 
 void bds::v_mod(lu_int i, double sep_fact, double sep_dist, double alig_fact, double dist_vic, double coes_fact, std::vector<boid> &boid_vector, double field_width, double field_height)
 {
-    couple v_mod = v_separation(i, sep_dist, sep_fact, boid_vector, field_width, field_height) + v_alignment(i, alig_fact, boid_vector) + v_coesion(i, dist_vic, coes_fact, boid_vector,field_width, field_height) + v_random();
-    boid_vector[i].vel_mod(v_mod);
-    // la velocità del boid viene modificata dalla funzione vel_mod a cui viene dato in input l'array v_mod precedentemente "creato"
-} // funzione che applica le modifiche di velocità legate alle regole al boid stesso, va iterata nel ciclo for per ogni boid
-
+    couple v_mod = v_separation(i, sep_dist, sep_fact, boid_vector, field_width, field_height) + v_alignment(i, alig_fact, boid_vector) + v_coesion(i, dist_vic, coes_fact, boid_vector,field_width, field_height);
+    double rndm_mod = sqrt(squaresum(v_mod)) / 10;
+    v_mod += v_random(rndm_mod);
+    boid_vector[i].vel_mod(v_mod); 
+} 
 void bds::p_mod(lu_int i, std::vector<boid> &boid_vector, double deltat)
 {
     boid_vector[i].pos_mod(deltat);
-} // funzione che forse non è necessaria, può essere implementata direttamente nel ciclo for; modifica la posizione in base alle velocità
+} 
 
 void bds::Pacman(std::vector<bds::boid> &boid_vector, lu_int i, double field_width, double field_height)
 {   
     periodize(boid_vector[i].get_pos(), field_width, field_height);
 }
 
+bds::GraphicBoids::GraphicBoids() {
+    sup.setPointCount(3);
+    sup.setPoint(0, sf::Vector2f(0.f, 0.f));
+    sup.setPoint(1, sf::Vector2f(9.f, 3.f));
+    sup.setPoint(2, sf::Vector2f(2.f, 3.f));
 
+    inf.setPointCount(3);
+    inf.setPoint(0, sf::Vector2f(0.f, 6.f));
+    inf.setPoint(1, sf::Vector2f(2.f, 3.f));
+    inf.setPoint(2, sf::Vector2f(9.f, 3.f));
 
+    sup.setFillColor(sf::Color::Red);
+    inf.setFillColor(sf::Color::Red);
+
+    sup.setOrigin(sf::Vector2f(3., 3.));
+    inf.setOrigin(sf::Vector2f(3., 3.));
+}
+
+void bds::GraphicBoids::move(double x, double y) {
+    inf.move(sf::Vector2f(static_cast<float>(x), static_cast<float>(y)));
+    sup.move(sf::Vector2f(static_cast<float>(x), static_cast<float>(y)));
+}
+
+void bds::GraphicBoids::rotate(double ang) {
+    inf.rotate(static_cast<float>(ang));
+    sup.rotate(static_cast<float>(ang));
+}
+
+void bds::GraphicBoids::setPosition(double x, double y) {
+    inf.setPosition(sf::Vector2f(static_cast<float>(x), static_cast<float>(y)));
+    sup.setPosition(sf::Vector2f(static_cast<float>(x), static_cast<float>(y)));
+}
+
+void bds::GraphicBoids::draw(sf::RenderWindow &window) {
+    window.draw(sup);
+    window.draw(inf);
+}
