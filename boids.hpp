@@ -20,6 +20,11 @@ couple operator*(double scal, couple const &vet);
 
 double squaresum(couple i);
 
+void operator+=(couple &add1, couple const &add2);
+
+void operator-=(couple &add1, couple const &add2);
+
+void operator*=(couple &couple, double mult);
 
 namespace bds
 { // questo namespace contiene ogni funzione o classe o cosa relativa ai boid (bds sta per boids)
@@ -37,19 +42,13 @@ namespace bds
         void pos_mod(couple p);
         couple pos() const;
         couple vel() const; 
-        double get_angle() const;// funzioni che uso per cavare fuori velocità e posizione dal boid
+        double get_angle() const;
+        couple& get_pos();// funzioni che uso per cavare fuori velocità e posizione dal boid
     };
     bool operator==(boid i, boid j);
-    bool operator !=(boid i, boid j);
-    class fperiod {
-        private:
-        double per_;
-        public: 
-        fperiod (double per);
-        auto operator() (double num);
-    };
+    bool operator!=(boid i, boid j);
 
-    void periodize(double &num, double per);
+    void periodize(couple& pos, double perx, double pery);
     bool BoidsAreNear(boid i, boid j, double dist, double field_width, double field_height);
 
     couple v_separation(lu_int i, double sep_dist, double sep_fact, std::vector<boid> boid_vector,double field_width, double field_height);
@@ -59,9 +58,9 @@ namespace bds
     void v_mod(lu_int i, double sep_fact, double sep_dist, double alig_fact, double dist_vic, double coes_fact, std::vector<boid> &boid_vector, double field_width, double field_height);
     void p_mod(lu_int i, std::vector<boid>& boid_vector, double deltat);
 
-    double GetMeanDistance(std::vector<boid> boid_vector, double sep_dist,double field_width, double field_height);
+    double GetMeanDistance(std::vector<boid> boid_vector);
     double GetMeanVelocity(std::vector<boid> boid_vector);
-    double GetStdDevDistance(std::vector<boid> boid_vector, double sep_dist, double field_width, double field_height);
+    double GetStdDevDistance(std::vector<boid> boid_vector);
     double GetStdDevVelocity(std::vector<boid> boid_vector);
     void Pacman(std::vector<bds::boid> &boid_vector, lu_int i, double field_width, double field_height);
 }

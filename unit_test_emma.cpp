@@ -7,6 +7,20 @@ TEST_CASE("Testing the sum of couples") {
 
 }
 
+TEST_CASE("Testing += operator") {
+    couple orig{0., 0.};
+    couple sum1{4., 5.};
+    couple sum2{2., 3.};
+
+    orig += sum1;
+    CHECK(orig[0] == 4.);
+    CHECK(orig[1] == 5.);
+
+    orig += sum2;
+    CHECK(orig[0] == 6.);
+    CHECK(orig[1] == 8.);
+}
+
 TEST_CASE("Testing the class member functions") {
 
     bds::boid tboid{couple{0., 0.}, couple{0., 0.}};

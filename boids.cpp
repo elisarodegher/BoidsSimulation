@@ -26,33 +26,44 @@ double squaresum(couple i)
     auto a = i.begin();
     auto b = i.end();
     double sum = std::inner_product(a, b, a, 0);
-    return sum; //da testare!!
+    return sum; 
 } // quadrato del modulo (per una coppia "i" di dati in generale)
 
-/* METODI DELLA CLASSE BOID */
-// bds è l'array
-// boid è la classe e anche il costruttore
+void operator+=(couple &add1, couple const &add2) {
+    add1 = add1 + add2;
+}
 
-bds::boid::boid(couple p, couple s) : pos_{p}, vel_{s} {} // costruttore di base, forse da togliere
+void operator-=(couple &add1, couple const&add2) {
+    add1 = add1 - add2;
+}
+
+void operator*=(couple &add0, double mult) {
+    add0 = (mult * add0);
+}
+
+/* METODI DELLA CLASSE BOID */
+
+bds::boid::boid(couple p, couple s) : pos_{p}, vel_{s} {}
 
 void bds::boid::vel_mod(couple s)
 {
-    vel_ = vel_ + s; // si dovrebbe implementare l'operatore +=, credo che a giacomini piaccia
+    vel_ += s; // si dovrebbe implementare l'operatore +=, credo che a giacomini piaccia
 } // modifica la velocità dato in input un array di "modifica" chiamato "s"; vel_ è un membro privato della classe boid.
 
 void bds::boid::pos_mod(double deltat)
 {
-    pos_ = pos_ + (deltat * vel_);
+    pos_ += (deltat * vel_);
 } // modifica la posizione, i parametri di velocità sono presi dal corpo della funzione; la posizione non può essere (per come è messa ora) modificata a piacere
 // posizione viene modificata aggiungendo la velocità moltiplicata per delta t (tempo)
 // assert sono da inserire nel ciclo for e nel costruttore
 void bds::boid::pos_mod(couple p)
 {
-    pos_ = pos_ + p;
+    pos_ += p;
 }
 
 couple bds::boid::pos() const { return pos_; }
-couple bds::boid::vel() const { return vel_; } // funzioni che uso per cavare fuori velocità e posizione dal boid
+couple bds::boid::vel() const { return vel_; } 
+couple& bds::boid::get_pos() { return pos_; }// funzioni che uso per cavare fuori velocità e posizione dal boid
 double bds::boid::get_angle() const
 {
     double angle = atan2(vel_[1], vel_[0]);
@@ -65,25 +76,20 @@ bool bds::operator!=(boid i, boid j) {
     return (i.pos() != j.pos() || i.vel() != j.vel());
 }
 
-bds::fperiod::fperiod(double per) : per_{fabs(per)} {}
-auto bds::fperiod::operator() (double num) {
-    if (num > (per_ / 2)) {
-        num -= per_;
-    }
-    if (num < (-per_ / 2)) {
-        num += per_;
-    }
-}
-
-
-
 /* FUNZIONI LIBERE */
-void bds::periodize(double &num, double per) {
-    if (num > (fabs(per) / 2)) {
-        num -= per;
+void bds::periodize(couple& pos, double perx, double pery) {
+    
+    if ((pos[0]) > (fabs(perx) / 2)) {
+        pos[0] -= perx;
     }
-    if (num < (-fabs(per) / 2)) {
-        num += per;
+    if ((pos[0]) < (-fabs(perx) / 2)) {
+        pos[0] += perx;
+    }
+    if ((pos[1]) > (fabs(pery) / 2)) {
+        pos[1] -= pery;
+    }
+    if ((pos[1]) < (-fabs(pery) / 2)) {
+        pos[1] += pery;
     }
 }
 
@@ -95,8 +101,7 @@ bool bds::BoidsAreNear(bds::boid i, bds::boid j, double dist, double field_width
     }
 
     couple diff = (i.pos() - j.pos()); 
-    periodize(diff[0], field_width);
-    periodize(diff[1], field_height); // array "vettore posizione differenza" tra i vettori pos di due boids.
+    periodize(diff, field_width, field_height); // array "vettore posizione differenza" tra i vettori pos di due boids.
 
     double diffdist = squaresum(diff);
     return diffdist < (dist * dist);
@@ -104,32 +109,14 @@ bool bds::BoidsAreNear(bds::boid i, bds::boid j, double dist, double field_width
 
 couple bds::v_separation(lu_int i, double sep_dist, double sep_fact, std::vector<boid> boid_vector, double field_width, double field_height)
 {
-    /*std::vector<couple> pos_vec;
-    auto makepos = [&pos_vec] (boid& i_boid) { 
-        couple p = i_boid.pos();
-        pos_vec.push_back(p);
-    };
-    
-    assert(i < boid_vector.size()); // si mette l'assert perchè tanto per come sarà formulato il ciclo, questa casistica non deve avvenire
-    
-    std::for_each(boid_vector.begin(), boid_vector.end(), makepos); */ 
-    //eventualmente (SE VA!) mettere la lambda inline
-    /*assert(std::all_of(boid_vector.begin(), boid_vector.end(), [&pos_vec] (boid& i_boid) { 
-        int i = 0; 
-        auto check = (i_boid.pos() == pos_vec[i]);
-        return check;
-        i++;})); */
-        //questo assert fallisce, da capire se è lui ad essere sbagliato o il programma prima ON GOD E' LUI SBAGLIATO
-         // i-esimo boid
     boid &i_boid = boid_vector[i];
-    auto lambda = [&] (couple& rel, boid& j_boid) {
+    couple v_sep;
+    v_sep = std::accumulate(boid_vector.begin(), boid_vector.end(), couple{0., 0.}, [&] (couple& rel, boid& j_boid) {
         if(BoidsAreNear(i_boid, j_boid, sep_dist, field_width, field_height)) {
-            rel = rel + (j_boid.pos() - i_boid.pos());
+            rel += (j_boid.pos() - i_boid.pos());
         }
         return rel;
-    };
-    couple v_sep;
-    v_sep = std::accumulate(boid_vector.begin(), boid_vector.end(), couple{0., 0.}, lambda); 
+    }); 
     /*couple v_sep;
 
     for (lu_int j = 0; j < boid_vector.size(); ++j)
@@ -148,8 +135,7 @@ couple bds::v_separation(lu_int i, double sep_dist, double sep_fact, std::vector
  */
     v_sep = (-1 * sep_fact) * v_sep;
     return v_sep;
-} // regola di separazione
-// ==> restituisce un array di coordinate di velocità
+}
 
 couple bds::v_alignment(lu_int i, double alig_fact, std::vector<boid> boid_vector)
 {
@@ -160,7 +146,7 @@ couple bds::v_alignment(lu_int i, double alig_fact, std::vector<boid> boid_vecto
 
     v_alig = std::accumulate(boid_vector.begin(), boid_vector.end(), couple {0., 0.}, [&] (couple& rvel, boid& j_boid) {
         if (i_boid != j_boid) { //capire se va bene come condizione di uguaglianza
-            rvel = rvel + j_boid.vel();
+            rvel += j_boid.vel();
         }
         return rvel;
     }); 
@@ -173,12 +159,12 @@ couple bds::v_alignment(lu_int i, double alig_fact, std::vector<boid> boid_vecto
             v_alig = v_alig + j_boid.vel();
         }
     } */
-    v_alig = (1. / static_cast<double>(boid_vector.size() - 1) * v_alig);
-    v_alig = v_alig - i_boid.vel();
+    v_alig *= (1. / static_cast<double>(boid_vector.size() - 1));
+    v_alig -= i_boid.vel();
 
-    v_alig = alig_fact * v_alig; 
+    v_alig *= alig_fact; 
     return v_alig;
-} // regola di allineamento ==> restituisce un array di coordinate di velocità
+} 
 
 couple bds::v_coesion(lu_int i, double dist_vic, double coes_fact, std::vector<boid> boid_vector, double field_width, double field_height)
 {
@@ -192,7 +178,7 @@ couple bds::v_coesion(lu_int i, double dist_vic, double coes_fact, std::vector<b
     } */
     c_mass = std::accumulate(boid_vector.begin(), boid_vector.end(), couple{0., 0.}, [&] (couple& cm, boid& j_boid) {
         if (BoidsAreNear(i_boid, j_boid, dist_vic, field_width, field_height)) {
-            cm = cm + j_boid.pos();
+            cm += j_boid.pos();
             ++near_boids;
         }
         return cm;
@@ -218,12 +204,12 @@ couple bds::v_coesion(lu_int i, double dist_vic, double coes_fact, std::vector<b
     }
     else
     {
-        c_mass = (1. / static_cast<double>(near_boids - 1)) * c_mass; // come prima static cast
-        c_mass = c_mass - i_boid.pos();
-        v_coes = coes_fact * c_mass;
+        c_mass *= (1. / static_cast<double>(near_boids - 1)); 
+        c_mass -= i_boid.pos();
+        v_coes *= coes_fact;
         return v_coes;
     }
-} // regola di coesione ==> restituisce un array di coordinate di velocità
+}
 
 couple bds::v_random()
 {
@@ -253,20 +239,18 @@ void bds::p_mod(lu_int i, std::vector<boid> &boid_vector, double deltat)
 
 /*FUNZIONI CHE ESTRAGGONO VALORI STATISTICI*/
 
-double bds::GetMeanDistance(std::vector<boid> boid_vector, double sep_dist, double field_width, double field_height)
+double bds::GetMeanDistance(std::vector<boid> boid_vector)
 {
     double dist_sum{0.};
     int n_events{0};
 
-    dist_sum = std::accumulate(boid_vector.begin(), boid_vector.end(), double{0}, [&] (double& d_s, boid& i_boid) {
-    d_s = std::accumulate(boid_vector.begin(), boid_vector.end(), double{0.}, [&] (double& ds, boid& j_boid) {
-        if (BoidsAreNear(i_boid, j_boid, sep_dist, field_width, field_height)) {
+    dist_sum = std::accumulate(boid_vector.begin(), boid_vector.end(), double{0.}, [&] (double& d_s, boid& i_boid) {
+        double local_sum = std::accumulate(boid_vector.begin(), boid_vector.end(), double{0.}, [&] (double& ds, boid& j_boid) {
             ds += sqrt(squaresum(i_boid.pos() - j_boid.pos()));
             ++n_events;
-        }
         return ds;
     });
-    return d_s;
+    return d_s + local_sum;
     });
 
     dist_sum = dist_sum / 2; //doppio delle distanze sommate
@@ -303,75 +287,80 @@ double bds::GetMeanVelocity(std::vector<boid> boid_vector)
         boid i_boid = boid_vector[i];
         vel_sum += sqrt(squaresum(i_boid.vel()));
     } */
-    double meanvel = vel_sum / boid_vector.size();
+    double meanvel = vel_sum / static_cast<double>(boid_vector.size());
     return meanvel; 
 } // tira fuori la velocità media dei boids, da chiamare nel ciclo
 
-double bds::GetStdDevDistance(std::vector<boid> boid_vector, double sep_dist, double field_width, double field_height)
+double bds::GetStdDevDistance(std::vector<boid> boid_vector)
 {
-    double meandist = GetMeanDistance(boid_vector, sep_dist, field_width, field_height);
-    double square_dist_sum{0.};
-    int n_events{0};
+    double meandist = GetMeanDistance(boid_vector);
+    double sum = std::accumulate(boid_vector.begin(), boid_vector.end(), double{0.}, [&](double &pass_sum, boid &i_boid) {
+        double local_sum = std::accumulate(boid_vector.begin(), boid_vector.end(), double{0.}, [&] (double &dm, boid &j_boid){
+            dm = (sqrt(squaresum(i_boid.pos() - j_boid.pos())) - meandist);
+            dm *= dm;
+            return dm;
+        });
+        pass_sum += local_sum;
+        return pass_sum;
+    });
+    /*double square_dist_sum{0.};
+    double square_dist_sum_2{0};
 
-    square_dist_sum = std::accumulate(boid_vector.begin(), boid_vector.end(), double{0}, [&] (double& d_s, boid& i_boid) {
-    d_s = std::accumulate(boid_vector.begin(), boid_vector.end(), double{0.}, [&] (double& ds, boid& j_boid) {
-        if (BoidsAreNear(i_boid, j_boid, sep_dist, field_width, field_height)) {
+    square_dist_sum_2 = std::accumulate(boid_vector.begin(), boid_vector.end(), double{0}, [&] (double& d_s, boid& i_boid) {
+    double local_sum = std::accumulate(boid_vector.begin(), boid_vector.end(), double{0.}, [&] (double& ds, boid& j_boid) {
             ds += squaresum(i_boid.pos() - j_boid.pos());
-            ++n_events;
-        }
         return ds;
     });
-    return d_s;
+    return d_s + local_sum;
     });
 
-    square_dist_sum = square_dist_sum / 2;
+    square_dist_sum_2 = square_dist_sum_2 / 2;
 
-    /*for (lu_int i = 0; i < boid_vector.size(); ++i)
+    for (lu_int i = 0; i < boid_vector.size(); ++i)
     {
         boid i_boid = boid_vector[i];
         for (lu_int j = 0; j < boid_vector.size(); ++j)
         {
             boid j_boid = boid_vector[j];
-            if (BoidsAreNear(i_boid, j_boid, sep_dist, field_width, field_height))
-            {
-                square_dist_sum += squaresum(i_boid.pos() - j_boid.pos());
-                ++n_events;
-            }
+            square_dist_sum += squaresum(i_boid.pos() - j_boid.pos());
         }
-    } */
-    double stddev = (square_dist_sum / n_events) - (meandist * meandist);
+    } 
+    if(square_dist_sum_2 != square_dist_sum) {
+        std::cout << "Problemo! \n" << square_dist_sum_2 << ", " << square_dist_sum << '\n'; 
+    }
+    double stddev = (square_dist_sum / static_cast<double>(boid_vector.size())) - (meandist * meandist); */
+    double stddev = sqrt(sum / (static_cast<double>(boid_vector.size()) * (static_cast<double>(boid_vector.size()) -1 )
+    * 2 ));
     return stddev;
 } // calcolo della deviazione standard come vuole la sara magica (quadrato della media - media dei quadrati)
 
 double bds::GetStdDevVelocity(std::vector<boid> boid_vector)
 {
-    double square_vel_sum{0.};
+    double meanvel = GetMeanVelocity(boid_vector);
+    //double square_vel_sum{0.};
+    double sum;
 
-    square_vel_sum = std::accumulate(boid_vector.begin(), boid_vector.end(), double{0.}, [&] (double& svs, boid& i_boid) {
-        svs += squaresum(i_boid.vel());
-        return svs;
+    sum = std::accumulate(boid_vector.begin(), boid_vector.end(), double{0.}, [&] (double &sm, boid &i_boid) {
+        sm = (sqrt(squaresum(i_boid.vel())) - meanvel);
+        sm *= sm;
+        return sm;
     });
 
-    /*for (lu_int i = 0; i < boid_vector.size(); ++i)
+    /* for (lu_int i = 0; i < boid_vector.size(); ++i)
     {
         boid i_boid = boid_vector[i];
         square_vel_sum += squaresum(i_boid.vel()); 
     } */
-    double meanvel = GetMeanVelocity(boid_vector);
-    double stddev = (square_vel_sum / boid_vector.size()) - (meanvel * meanvel);
+
+    double stddev = sqrt( sum / (static_cast<double>(boid_vector.size()) * (static_cast<double>(boid_vector.size()) -1 )
+    * 2 ));
     return stddev;
 } // come prima
 
 void bds::Pacman(std::vector<bds::boid> &boid_vector, lu_int i, double field_width, double field_height)
 {   
-
-    periodize(boid_vector[i].pos()[0], field_width);
-    periodize(boid_vector[i].pos()[1], field_height); //non va, perchè la funzione non agisce per reference
-    // std::cout << "Before Pacman: Velocity = (" << boid_vector[i].vel()[0] << ", " << boid_vector[i].vel()[1] << ")\n";
-   //  std::cout << "After Pacman: Velocity = (" << boid_vector[i].vel()[0] << ", " << boid_vector[i].vel()[1] << ")\n";
+    periodize(boid_vector[i].get_pos(), field_width, field_height);
 }
 
-/*il programma compila senza warning ma ancora non so se funzioni
-*/
 
 

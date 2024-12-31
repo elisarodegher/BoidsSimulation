@@ -16,14 +16,16 @@ int main()
     double dist_vic;
 
     double time_interval;
+    double time_check;
 
     n_boids = 100;
     dist_vic = 6.; 
     sep_dist = 0.5;
-    sep_fact = 0.07; 
-    align_fact = 0.01;
+    sep_fact = 0.3; 
+    align_fact = 0.09;
     coes_fact = 0.009;
     time_interval = 60;
+    time_check = 5.;
 
 
     /*std::cout << "Number of boids: \n";
@@ -40,6 +42,8 @@ int main()
     std::cin >> coes_fact;
      std::cout << "Simulation's duration:\n";
     std::cin >> time_interval;
+     std::cout << "This program prints statistic values of the group every x seconds. Please insert the number of seconds between each print: \n";
+    std::cin >> time_check;
     */    
     // esisterà un modo più elegante per fare le domande all'utente? compilazione di una tabella nella parte grafica?
 
@@ -57,14 +61,17 @@ int main()
 
         boid_vector.push_back({p, s});
     }
+    
     // controllare che non ci siano boids uguali
 
     double fieldwidth{30.};
     double fieldheight{20.};
     double Deltat{0.025};
+    
     sf::RenderWindow sky(sf::VideoMode(900, 600), "boidsgraphic", sf::Style::Default);
     sky.setFramerateLimit(40); //questo frame dovrebbe sincronizzarsi col tempo di calcolo
     sf::Clock clock;
+    sf::Clock stat_clock;
     //conversion width-height rate to window: 60
 
         while(sky.isOpen()) {
@@ -78,6 +85,13 @@ int main()
 
         if (clock.getElapsedTime().asSeconds() >= time_interval) {
             sky.close();
+        }
+
+        if (stat_clock.getElapsedTime().asSeconds() >= time_check) {
+            std::cout << "Time passed: " << clock.getElapsedTime().asSeconds() << " s\n";
+            std::cout << "Mean distance: " << bds::GetMeanDistance(boid_vector) << " +/- " << bds::GetStdDevDistance(boid_vector) << "\n";
+            std::cout << "Mean velocity: " << bds::GetMeanVelocity(boid_vector) << " +/- " << bds::GetStdDevVelocity(boid_vector) << "\n";
+            stat_clock.restart();
         }
 
         sky.clear(sf::Color(135, 206, 235));
@@ -94,19 +108,17 @@ int main()
             boid.setOrigin(3.f, 3.f);
             boid.setPosition(450., 300.);
 
-            // std::cout << "Before teleport: Position = (" << boid_vector[i].pos()[0] << ", " << boid_vector[i].pos()[1] << "), Velocity = (" << boid_vector[i].vel()[0] << ", " << boid_vector[i].vel()[1] << ")\n";
-
             v_mod(i, sep_fact, sep_dist, align_fact, dist_vic, coes_fact, boid_vector, fieldwidth, fieldheight);
             double angle_rad = boid_vector[i].get_angle();
             double angle_deg = angle_rad * (180 / 3.1415);
-            boid.rotate(angle_deg);
+            boid.rotate(static_cast<float>(angle_deg));
 
             p_mod(i, boid_vector, Deltat);
             Pacman(boid_vector, i, fieldwidth, fieldheight);
-            // std::cout << "After teleport: Position = (" << boid_vector[i].pos()[0] << ", " << boid_vector[i].pos()[1] << "), Velocity = (" << boid_vector[i].vel()[0] << ", " << boid_vector[i].vel()[1] << ")\n";
+
             couple gr_pos = boid_vector[i].pos();
             gr_pos = 30 * gr_pos;
-            boid.move(gr_pos[0], gr_pos[1]);
+            boid.move(static_cast<float>(gr_pos[0]), static_cast<float>(gr_pos[1]));
 
             sky.draw(boid);
         }
@@ -120,8 +132,8 @@ int main()
     }
     else {
 
-    std::cout << "Distanza media tra i boids" << bds::GetMeanDistance(boid_vector, sep_dist, fieldwidth, fieldheight) << "+/-" << bds::GetStdDevDistance(boid_vector, sep_dist, fieldwidth, fieldheight) << "\n";
-    std::cout << "Velocità media dei boids" << bds::GetMeanVelocity(boid_vector) << "+/-" << bds::GetStdDevVelocity(boid_vector) << "\n";
+    std::cout << "Final mean distance: " << bds::GetMeanDistance(boid_vector) << " +/- " << bds::GetStdDevDistance(boid_vector) << "\n";
+    std::cout << "Final mean velocity: " << bds::GetMeanVelocity(boid_vector) << " +/- " << bds::GetStdDevVelocity(boid_vector) << "\n";
     }
 }
 
