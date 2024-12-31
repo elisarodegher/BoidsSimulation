@@ -1,30 +1,4 @@
-#include <array>
-#include <iostream>
-#include <vector>
-#include <cassert>
-#include <numeric>
-#include <cmath> 
-#include <random>
-#include <ctime>
-#include <algorithm>//cose che vanno a finire anche nel sorgente
-
-using couple = std::array<double, 2>;
-using lu_int = long unsigned int; // ho messo questi due alias perchè scrivere ogni volta i nomi originali diventa un suicidio
-
-/* OPERAZIONI TRA ARRAY */
-couple operator+(couple const &add1, couple const &add2);
-
-couple operator-(couple const &add1, couple const &add2);
-
-couple operator*(double scal, couple const &vet);
-
-double squaresum(couple i);
-
-void operator+=(couple &add1, couple const &add2);
-
-void operator-=(couple &add1, couple const &add2);
-
-void operator*=(couple &couple, double mult);
+#include "operators.hpp"
 
 namespace bds
 { // questo namespace contiene ogni funzione o classe o cosa relativa ai boid (bds sta per boids)
@@ -57,11 +31,7 @@ namespace bds
     couple v_random();
     void v_mod(lu_int i, double sep_fact, double sep_dist, double alig_fact, double dist_vic, double coes_fact, std::vector<boid> &boid_vector, double field_width, double field_height);
     void p_mod(lu_int i, std::vector<boid>& boid_vector, double deltat);
-
-    double GetMeanDistance(std::vector<boid> boid_vector);
-    double GetMeanVelocity(std::vector<boid> boid_vector);
-    double GetStdDevDistance(std::vector<boid> boid_vector);
-    double GetStdDevVelocity(std::vector<boid> boid_vector);
+    
     void Pacman(std::vector<bds::boid> &boid_vector, lu_int i, double field_width, double field_height);
 }
 

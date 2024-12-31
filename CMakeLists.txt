@@ -19,7 +19,9 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${SANITIZE_FLAGS}")
 set(SOURCES
     maingraph.cpp
     boids.cpp
-)
+    operators.cpp
+    statistics.cpp
+    )
 
 #specifica che l'eseguibile binario va nella cartella bin 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

@@ -1,4 +1,4 @@
-#include "boids.hpp"
+#include "statistics.hpp"
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
