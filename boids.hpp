@@ -50,6 +50,4 @@ namespace bds
     };
 }
 
-
-//TO_DO list
-//togliere warning di conversione
+//AGGIUNGERE CLANG FORMAT
