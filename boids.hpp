@@ -41,7 +41,7 @@ namespace bds
     couple v_coesion(lu_int i, double dist_vic, double coes_fact, const std::vector<boid>& boid_vector,double field_width, double field_height);
     couple v_random(double rndm_mod);
     couple v_wind(wind i_wind);
-    void v_mod(lu_int i, double sep_fact, double sep_dist, double alig_fact, double dist_vic, double coes_fact, std::vector<boid> &boid_vector, double field_width, double field_height, wind gen_wind);
+    void v_mod(lu_int i, double sep_fact, double sep_dist, double alig_fact, double dist_vic, double coes_fact, std::vector<boid> &boid_vector, double field_width, double field_height, wind gen_wind, double rndm_mod);
     void p_mod(lu_int i, std::vector<boid>& boid_vector, double deltat);
     
     void Pacman(std::vector<bds::boid> &boid_vector, lu_int i, double field_width, double field_height);

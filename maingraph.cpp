@@ -14,14 +14,17 @@ int main() {
   double sep_dist;
   double dist_vic;
 
+  double rndm_mod{0.3};
+  double wind_intensity{1};
+
   double time_interval;
   double time_check;
 
-  n_boids = 300;
+  n_boids = 200;
   dist_vic = 1.;
   sep_dist = 0.1;
-  sep_fact = 0.09;
-  align_fact = 0.009;
+  sep_fact = 0.3;
+  align_fact = 0.04;
   coes_fact = 0.009;
   time_interval = 60;
   time_check = 5.;
@@ -59,7 +62,7 @@ int main() {
     boid_vector.push_back({p, s});
   }
 
-  bds::wind b_wind{0.0, 0.};
+  bds::wind b_wind{wind_intensity, 0.};
 
   double fieldwidth{30.};
   double fieldheight{20.};
@@ -116,7 +119,7 @@ int main() {
       GBoid.setPosition(450., 300.);
 
       v_mod(i, sep_fact, sep_dist, align_fact, dist_vic, coes_fact, boid_vector,
-            fieldwidth, fieldheight, b_wind);
+            fieldwidth, fieldheight, b_wind, rndm_mod);
       GBoid.rotate(to_degrees(boid_vector[i].get_angle()));
 
       p_mod(i, boid_vector, Deltat);

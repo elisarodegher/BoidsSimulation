@@ -8,8 +8,8 @@ TEST_CASE("Testing the operations of couples") {
   couple c{-3., -8.};
   couple minus_c{3., 8.};
   couple sum_ab{5., 25.};
-  couple subtr_ab{3., -11.};   // a meno b
-  couple two_dot_a{12., 21.};  // a moltiplicato per due
+  couple subtr_ab{3., -11.};   // a - b
+  couple two_dot_a{12., 21.};  // 2 * a
   couple sum_ac{1., -1.};
   couple sum_bc{-2., 10.};
   couple zero{0., 0.};
@@ -38,38 +38,25 @@ TEST_CASE("Testing the squaresum") {
 TEST_CASE("Testing the class member functions") {
   bds::boid tboid{
       couple{0., 0.},
-      couple{0., 0.}};  // boid con cui testiamo il costruttore nullo
+      couple{0., 0.}}; 
   couple tvel{5., -3.};
-  tboid.pos_mod(1.);  // la posizione viene modificata con questo deltat (1sec),
-                      // dovrebbe rimanere uguale
-  tboid.vel_mod(tvel);  // velocità del test boid settata a 5,-3.
-  couple ais{5., -3};
-  couple bis{0., 0.};
+  tboid.pos_mod(1.);  
+  tboid.vel_mod(tvel); 
 
-  CHECK(tboid.get_vel_value() == ais);
-  CHECK(tboid.get_pos_value() == bis);
+  CHECK(tboid.get_vel_value() == couple{5., -3});
+  CHECK(tboid.get_pos_value() == couple{0., 0.});
 
-  couple xpos{1., 1.};
-  couple xvel{1., 2.};
-  bds::boid xboid{xpos, xvel};  // boid con cui testiamo il costruttore normale
-  couple added_vel{1., 1.};
-  xboid.vel_mod(added_vel);
-  couple new_vel{2., 3.};
-  couple new_pos{3., 4.};
+  bds::boid xboid{{1., 1.}, {1., 2.}};
+  xboid.vel_mod({1., 1.});
   xboid.pos_mod(1.);
-  CHECK(xboid.get_vel_value() == new_vel);
-  CHECK(xboid.get_pos_value() == new_pos);
+  CHECK(xboid.get_vel_value() == couple{2., 3.});
+  CHECK(xboid.get_pos_value() == couple{3., 4.});
 
-  couple ypos{1., 1.};
-  couple yvel{1., 2.};
-  bds::boid yboid{ypos, yvel};  // boid con cui testiamo il costruttore normale
-  couple added_vel_2{1., 1.};
-  yboid.vel_mod(added_vel_2);
-  couple new_vel_2{2., 3.};
-  couple new_pos_2{3., 4.};
+  bds::boid yboid{{1., 1.}, {1., 2.}};  // boid con cui testiamo il costruttore normale
+  yboid.vel_mod({1., 1.});
   yboid.pos_mod(1.);
-  CHECK(yboid.get_vel_value() == new_vel_2);
-  CHECK(yboid.get_pos_value() == new_pos_2);
+  CHECK(yboid.get_vel_value() == couple{2., 3.});
+  CHECK(yboid.get_pos_value() == couple{3., 4.});
 }
 
 TEST_CASE("Testing 'Boidsarenear' function") {
@@ -80,8 +67,7 @@ TEST_CASE("Testing 'Boidsarenear' function") {
   double field_height{10};
   CHECK(BoidsAreNear(i, j, dist, field_width, field_height) == 1);
 
-  couple ivel{1.5, 2.};
-  i.vel_mod(ivel);
+  i.vel_mod({1.5, 2.});
   i.pos_mod(1.);
   CHECK(BoidsAreNear(i, j, dist, field_width, field_height) == 1);
 
@@ -91,8 +77,7 @@ TEST_CASE("Testing 'Boidsarenear' function") {
   i.pos_mod(1.);
   CHECK(BoidsAreNear(i, j, dist, field_width, field_height) == 0);
 
-  ivel = {-3., -4.};
-  i.vel_mod(ivel);
+  i.vel_mod({-3., -4.});
   i.pos_mod(3.);
   couple c{0., 0.};
 
@@ -101,41 +86,7 @@ TEST_CASE("Testing 'Boidsarenear' function") {
   CHECK(BoidsAreNear(i, j, dist, field_width, field_height) == 1);
 }
 
-TEST_CASE("Testing velocity modifier") {
-    std::vector<bds::boid> test_vector;
-    couple pi{0., 0};
-    couple vi{0., 0.};
-    bds::boid a{pi, vi};
-    double field_width{15.};
-    double field_height{15.};
-    test_vector.push_back(a);
 
-    pi = {1., 2.};
-    vi = {1., 1.};
-    bds::boid b{pi, vi};
-    test_vector.push_back(b);
-
-    pi = {-2., 1.};
-    vi = {1., 0.};
-    bds::boid c{pi, vi};
-    test_vector.push_back(c);
-
-    pi = {1., -2.};
-    vi = {1., 2.};
-    bds::boid d{pi, vi};
-    test_vector.push_back(d);
-
-    bds::wind null_wind{0., 0.};
-
-    bds::v_mod(0, 0.5, 3., 1, 5., 4, test_vector, field_width, field_height, null_wind);
-
-    double av1 = test_vector[0].get_vel_value()[0];
-    double av2 = test_vector[0].get_vel_value()[1];
-
-    CHECK(av1 == 1);
-    CHECK(av2 == doctest::Approx(1.8333));
-
-}
 
 TEST_CASE("Separation Velocity Function") {
   double field_width{15.};
@@ -285,7 +236,7 @@ TEST_CASE("Alignment Velocity Function") {
     alig_vector.push_back(a_2);
     alig_vector.push_back(a_3);
 
-    couple v_alig = bds::v_alignment(0, 3, alig_vector);
+    couple v_alig = bds::v_alignment(0, 1, alig_vector);
 
     CHECK(v_alig[0] == 0);
     CHECK(v_alig[1] == 0);
@@ -409,7 +360,53 @@ TEST_CASE("Coesion Function") {
     couple v_coes =
         bds::v_coesion(0, dist_vic, 2, bord_vector, field_width, field_height);
 
-    CHECK(v_coes[0] == -13.);
-    CHECK(v_coes[1] == 8);
+    CHECK(v_coes[0] == 2);
+    CHECK(v_coes[1] == -2);
   }
+}
+
+TEST_CASE("Testing velocity modifier") {
+    std::vector<bds::boid> test_vector;
+    couple pi{0., 0};
+    couple vi{0., 0.};
+    bds::boid a{pi, vi};
+    double field_width{15.};
+    double field_height{15.};
+    double rndm_mod{0.01};
+    test_vector.push_back(a);
+
+    pi = {1., 2.};
+    vi = {1., 1.};
+    bds::boid b{pi, vi};
+    test_vector.push_back(b);
+
+    pi = {-2., 1.};
+    vi = {1., 0.};
+    bds::boid c{pi, vi};
+    test_vector.push_back(c);
+
+    pi = {1., -2.};
+    vi = {1., 2.};
+    bds::boid d{pi, vi};
+    test_vector.push_back(d);
+
+    bds::wind null_wind{0., 0.};
+
+    bds::v_mod(0, 0.5, 3., 1, 5., 4, test_vector, field_width, field_height, null_wind, rndm_mod);
+
+    double av1 = test_vector[0].get_vel_value()[0];
+    double av2 = test_vector[0].get_vel_value()[1];
+
+    CHECK(av1 == doctest::Approx(1.).epsilon(0.02));
+    CHECK(av2 == doctest::Approx(1.8333).epsilon(0.02));
+
+    SUBCASE("Test with wind") {
+      bds::wind some_wind{3., 0.};
+      bds::v_mod(0, 0.5, 3., 1, 5., 4, test_vector, field_width, field_height, some_wind, rndm_mod);
+
+      CHECK(test_vector[0].get_vel_value()[0] == doctest::Approx(1.3).epsilon(0.02));
+      CHECK(test_vector[0].get_vel_value()[1] == doctest::Approx(1.8333).epsilon(0.02));
+
+    }
+
 }

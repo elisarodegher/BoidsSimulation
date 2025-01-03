@@ -60,24 +60,26 @@ bool bds::BoidsAreNear(bds::boid i, bds::boid j, double dist,
   if (&i == &j) {
     return 0;
   }
+  else {
 
   couple diff = (i.get_pos_value() - j.get_pos_value());
   periodize(diff, field_width, field_height);
 
   double diffdist = squaresum(diff);
   return diffdist < (dist * dist);
+  }
 }
 
 couple bds::v_separation(lu_int i, double sep_dist, double sep_fact,
                          const std::vector<boid>& boid_vector, double field_width,
                          double field_height) {
-  boid i_boid = boid_vector[i];
+
   couple v_sep;
   v_sep = std::accumulate(
       boid_vector.begin(), boid_vector.end(), couple{0., 0.},
       [&](couple& rel, const boid& j_boid) {
-        if (BoidsAreNear(i_boid, j_boid, sep_dist, field_width, field_height)) {
-          couple diff = (j_boid.get_pos_value() - i_boid.get_pos_value());
+        if (BoidsAreNear(boid_vector[i], j_boid, sep_dist, field_width, field_height)) {
+          couple diff = (j_boid.get_pos_value() - boid_vector[i].get_pos_value());
           periodize(diff, field_width, field_height);
           rel += diff;
         }
@@ -93,13 +95,11 @@ couple bds::v_alignment(lu_int i, double alig_fact,
   couple v_alig;
   assert(i < boid_vector.size());
 
-  boid i_boid = boid_vector[i];
-
   v_alig = std::accumulate(
       boid_vector.begin(), boid_vector.end(), couple{0., 0.},
       [&](couple& rvel, const boid& j_boid) {
-        if (&i_boid !=
-            &j_boid) {  // capire se va bene come condizione di uguaglianza
+        if (&boid_vector[i] !=
+            &j_boid) { 
           rvel += j_boid.get_vel_value();
         }
         return rvel;
@@ -109,7 +109,7 @@ couple bds::v_alignment(lu_int i, double alig_fact,
     v_alig = {0., 0.};
   } else {
     v_alig *= (1. / static_cast<double>(boid_vector.size() - 1));
-    v_alig -= i_boid.get_vel_value();
+    v_alig -= boid_vector[i].get_vel_value();
     v_alig *= alig_fact;
   }
   return v_alig;
@@ -121,16 +121,15 @@ couple bds::v_coesion(lu_int i, double dist_vic, double coes_fact,
   couple c_mass;
   assert(i < boid_vector.size());
 
-  boid i_boid = boid_vector[i];
   int near_boids{1};
 
   c_mass = std::accumulate(
       boid_vector.begin(), boid_vector.end(), couple{0., 0.},
       [&](couple& cm, const boid& j_boid) {
-        if (BoidsAreNear(i_boid, j_boid, dist_vic, field_width, field_height)) {
-            couple diff = j_boid.get_pos_value() - i_boid.get_pos_value();
+        if (&boid_vector[i] != &j_boid && BoidsAreNear(boid_vector[i], j_boid, dist_vic, field_width, field_height)) {
+            couple diff = j_boid.get_pos_value() - boid_vector[i].get_pos_value();
             periodize(diff, field_width, field_height);
-            cm += (i_boid.get_pos_value() + diff);
+            cm += (boid_vector[i].get_pos_value() + diff);
             ++near_boids;
         }
         return cm;
@@ -141,7 +140,7 @@ couple bds::v_coesion(lu_int i, double dist_vic, double coes_fact,
     return v_coes;
   } else {
     c_mass *= (1. / static_cast<double>(near_boids - 1));
-    c_mass -= i_boid.get_pos_value();
+    c_mass -= boid_vector[i].get_pos_value();
     v_coes = coes_fact * c_mass;
     return v_coes;
   }
@@ -163,24 +162,21 @@ couple bds::v_random(double rndm_mod) {
 }
 
 couple bds::v_wind(wind i_wind) {
-    couple v_wind = 0.2 * i_wind.get_coordinates();
+    couple v_wind = 0.1 * i_wind.get_coordinates();
     return v_wind;
 }
 
 void bds::v_mod(lu_int i, double sep_fact, double sep_dist, double alig_fact,
                 double dist_vic, double coes_fact,
                 std::vector<boid>& boid_vector, double field_width,
-                double field_height, wind gen_wind) {
+                double field_height, wind gen_wind, double rndm_mod) {
   couple v_mod =
       v_separation(i, sep_dist, sep_fact, boid_vector, field_width,
                    field_height) +
       v_alignment(i, alig_fact, boid_vector) +
       v_coesion(i, dist_vic, coes_fact, boid_vector, field_width, field_height);
-  v_mod += v_random(0.3);
+  v_mod += v_random(rndm_mod);
   v_mod += v_wind(gen_wind);
-  if (squaresum(v_mod) > 1000) {
-    v_mod *= 0.75;
-  }
   boid_vector[i].vel_mod(v_mod);
 }
 void bds::p_mod(lu_int i, std::vector<boid>& boid_vector, double deltat) {
