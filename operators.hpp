@@ -1,3 +1,7 @@
+#ifndef OPERATORS_HPP
+#define OPERATORS_HPP
+
+
 #include <array>
 #include <iostream>
 #include <vector>
@@ -28,3 +32,5 @@ void operator*=(couple &couple, double mult);
 double to_degrees(double ang_rad);
 
 double to_radians(double ang_deg);
+
+#endif

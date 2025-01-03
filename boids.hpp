@@ -1,3 +1,8 @@
+#ifndef BOIDS_HPP
+#define BOIDS_HPP
+
+
+
 #include "operators.hpp"
 #include <SFML/Graphics.hpp>
 
@@ -48,6 +53,7 @@ namespace bds
 
 };
 
+#endif 
 
 //impostare una buona interfaccia utente
 //mettere il pigreco vero 
