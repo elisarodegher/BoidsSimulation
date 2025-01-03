@@ -1,3 +1,5 @@
+#ifndef GRAPHICS_HPP
+#define GRAPHICS_HPP
 #include "boids.hpp" 
 
 namespace bds {
@@ -27,3 +29,4 @@ namespace bds {
         
     };
 }
+#endif

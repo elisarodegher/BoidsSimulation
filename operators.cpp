@@ -36,5 +36,5 @@ double to_degrees(double ang_rad) {
 
 double to_radians(double ang_deg) {
   double ang_rad = (ang_deg * 3.1415) / 180;
-  return ang_deg;
+  return ang_rad;
 }
