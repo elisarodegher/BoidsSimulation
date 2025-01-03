@@ -46,33 +46,10 @@ namespace bds
     
     void Pacman(std::vector<bds::boid> &boid_vector, lu_int i, double field_width, double field_height);
 
-    class GraphicBoids {
-        private:
-        sf::ConvexShape sup;
-        sf::ConvexShape inf;
-
-        public:
-        GraphicBoids();
-        void move(double x, double y);
-        void rotate(double ang);
-        void setPosition(double x, double y);
-        void draw(sf::RenderWindow& window);
-
-    };
-
-    class GraphicWind {
-        private:
-        sf::RectangleShape wind_line;
-        sf::ConvexShape wind_arrow;
-
-        public:
-        GraphicWind(wind w);
-        void draw(sf::RenderWindow& window);
-    };
 };
 
-//risolvere problemi nei test (lacrime)
+
 //impostare una buona interfaccia utente
-//curare l'uniformità dei test
 //curare i nomi delle funzioni
 //curare il vento (o toglierlo)
+//mettere il pigreco vero 

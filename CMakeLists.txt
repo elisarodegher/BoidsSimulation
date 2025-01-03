@@ -20,6 +20,7 @@ set(SOURCES
     maingraph.cpp
     boids.cpp
     operators.cpp
+    graphics.cpp
     statistics.cpp
     )
 

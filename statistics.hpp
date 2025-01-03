@@ -1,4 +1,4 @@
-#include "boids.hpp"
+#include "graphics.hpp"
 
 namespace bds {
     double GetMeanDistance(std::vector<boid> boid_vector);

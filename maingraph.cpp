@@ -15,12 +15,12 @@ int main() {
   double dist_vic;
 
   double rndm_mod{0.3};
-  double wind_intensity{1};
+  double wind_intensity{0.05};
 
   double time_interval;
   double time_check;
 
-  n_boids = 200;
+  n_boids = 150;
   dist_vic = 1.;
   sep_dist = 0.1;
   sep_fact = 0.3;
@@ -101,8 +101,6 @@ int main() {
       stat_clock.restart();
     }
 
-    
-    
     if (wind_clock.getElapsedTime().asSeconds() >= 9) {
     std::random_device wind_mod;
     std::default_random_engine eng2(wind_mod());
@@ -132,7 +130,12 @@ int main() {
       GBoid.draw(sky);
     }
 
+    sf::RectangleShape wind_panel(sf::Vector2f(70.f, 70.f));
+    wind_panel.setFillColor(sf::Color::Green);
+    sky.draw(wind_panel);
+
     bds::GraphicWind GWind{b_wind};
+    GWind.setPosition(35., 35.);
     GWind.draw(sky);
 
     sky.display();
