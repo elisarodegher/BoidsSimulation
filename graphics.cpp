@@ -11,8 +11,8 @@ bds::GraphicBoids::GraphicBoids() {
   inf.setPoint(1, sf::Vector2f(2.f, 3.f));
   inf.setPoint(2, sf::Vector2f(9.f, 3.f));
 
-  sup.setFillColor(sf::Color::Red);
-  inf.setFillColor(sf::Color::Red);
+  sup.setFillColor(sf::Color::Black);
+  inf.setFillColor(sf::Color::Blue);
 
   sup.setOrigin(sf::Vector2f(3., 3.));
   inf.setOrigin(sf::Vector2f(3., 3.));
@@ -48,9 +48,10 @@ bds::GraphicWind::GraphicWind(wind w) : wind_line{sf::RectangleShape(sf::Vector2
 
     wind_line.setOrigin(sf::Vector2f(33.f, 1.5f));
     wind_arrow.setOrigin(sf::Vector2f(33.f, 1.5f));
-
-    wind_line.setFillColor(sf::Color::Blue);
-    wind_arrow.setFillColor(sf::Color::Red);
+ 
+ sf::Color lightRed(217, 88, 88);
+    wind_line.setFillColor(sf::Color::Red);
+    wind_arrow.setFillColor(lightRed);
 
     wind_line.setRotation(static_cast<float>(to_degrees(w.get_angle_rad())));
     wind_arrow.setRotation(static_cast<float>(to_degrees(w.get_angle_rad())));
