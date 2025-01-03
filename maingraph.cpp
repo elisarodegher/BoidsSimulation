@@ -5,6 +5,7 @@
 #include "statistics.hpp"
 
 int main() {
+  //INITIAL FACTORS
   lu_int n_boids;
 
   double sep_fact;
@@ -14,49 +15,79 @@ int main() {
   double sep_dist;
   double dist_vic;
 
-  double rndm_mod{0.3};
-  double wind_intensity{0.05};
+  double rndm_mod;
+  double wind_intensity;
 
   double time_interval;
   double time_check;
+  double wind_time;
+
+  char yn_answer;
 
   n_boids = 150;
-  dist_vic = 1.;
+  dist_vic = 7.;
   sep_dist = 0.1;
-  sep_fact = 0.3;
-  align_fact = 0.04;
-  coes_fact = 0.009;
+  sep_fact = 1;
+  align_fact = 0.01; //range 0.01 - 0.2
+  coes_fact = 0.1; //range 0.005 - 0.1
   time_interval = 60;
-  time_check = 5.;
+  time_check = 5.; 
+  rndm_mod = 0;
+  wind_intensity = 0;
+  wind_time = 3;
+  
+  //USER INTERFACE
 
-  /*std::cout << "Number of boids: \n";
+  /*std::cout << "BOIDS SIMULATION\n by Elisa Rodegher, Emma Rubbi, Gaetano valentino\n" << "\n This program performs a simulation of a flock of boids. Before starting, we need a series of input parameters. \n";
+  std::cout << "Please type the following parameters: \n";
+  std::cout << "a) Number of boids: \n";
   std::cin >> n_boids;
-  std::cout << "Minimum distance for boids to be considered near \n";
+  std::cout << "b) Maximum distance for boids to be considered near \n";
   std::cin >> dist_vic;
-  std::cout << "Minimum distance for boids to separate \n";
+  std::cout << "c) Maximum distance for boids to separate \n";
   std::cin >> sep_dist;
-   std::cout << "Separation factor: \n";
+  std::cout << "Each boid moves following three rules: separation, alignment, coesion. Please type the coefficient that determine the impact of each rule (see relation for more informations)\n";
+  std::cout << "d) Separation rule coefficient: \n";
   std::cin >> sep_fact;
-   std::cout << "Alignment factor: \n";
+  std::cout << "e) Alignment rule coefficient: \n";
   std::cin >> align_fact;
-   std::cout << "Coesion factor: \n";
+  std::cout << "f) Coesion rule coefficient: \n";
   std::cin >> coes_fact;
-   std::cout << "Simulation's duration:\n";
+  std::cout << "The program uses a low-impact random booster. Do you want to manually initialize it?(y/n)\n";
+  std::cin >> yn_answer;
+  if (yn_answer == 'y' || yn_answer == 'Y') {
+    std::cout << "Please insert the intensity of the booster (0 means no booster):\n";
+    std::cin >> rndm_mod;
+  } else {
+    rndm_mod = 0.3;
+  }
+  std::cout << "Boids are subjected to wind force. Do you want to manually initialize the wind?\n";
+  std::cin >> yn_answer;
+  if (yn_answer == 'y' || yn_answer == 'Y') {
+    std::cout << "Please type the wind's intensity. It will not change for the entire simulation\n";
+    std::cin >> wind_intensity;
+    std::cout << "The wind will randomly change direction every x seconds. Please insert the duration of each direction:\n";
+    std::cin >> wind_time;
+  } else {
+    wind_intensity = 0.05;
+    wind_time = 3.5;
+  }
+  std::cout << "Now type the simulation's duration (in seconds). You can end the simulation earlier by closing the graphic simulation window.\n";
   std::cin >> time_interval;
-   std::cout << "This program prints statistic values of the group every x
-  seconds. Please insert the number of seconds between each print: \n"; std::cin
-  >> time_check;
+  std::cout << "Lastly, this program prints statistic values of the group every x seconds. Please insert the number of seconds between each print: \n"; 
+  std::cin >> time_check;
   */
+  //BOIDS INIZIALIZATION
 
   std::default_random_engine eng(static_cast<lu_int>(std::time(nullptr)));
-  std::uniform_real_distribution<double> dist(-10., 10.);
+  std::uniform_real_distribution<double> dist(-30., 30.);
 
   std::vector<bds::boid> boid_vector;
   couple p;
   couple s;
 
   for (lu_int i = 0; i != n_boids; ++i) {
-    p = {dist(eng), dist(eng)};
+    p = {2 * dist(eng), 3 * dist(eng)};
     s = {dist(eng), dist(eng)};
 
     boid_vector.push_back({p, s});
@@ -64,19 +95,20 @@ int main() {
 
   bds::wind b_wind{wind_intensity, 0.};
 
-  double fieldwidth{30.};
-  double fieldheight{20.};
+  double fieldwidth{90.};
+  double fieldheight{60.};
   double Deltat{0.025};
 
+  //GRAPHIC INIZIALIZATION
 
   sf::RenderWindow sky(sf::VideoMode(900, 600), "boidsgraphic",
                        sf::Style::Default);
-  sky.setFramerateLimit( static_cast<unsigned int>(
+  sky.setFramerateLimit(static_cast<unsigned int>(
       1 / Deltat));
   sf::Clock clock;
   sf::Clock stat_clock;
   sf::Clock wind_clock;
-  // conversion width-height rate to window: 60
+  // conversion width-height rate to window: 10
 
   while (sky.isOpen()) {
     //EVENTS AND TIME MANAGING
@@ -101,7 +133,7 @@ int main() {
       stat_clock.restart();
     }
 
-    if (wind_clock.getElapsedTime().asSeconds() >= 9) {
+    if (wind_clock.getElapsedTime().asSeconds() >= wind_time) {
     std::random_device wind_mod;
     std::default_random_engine eng2(wind_mod());
     std::uniform_real_distribution<double> wind_rotations(-180., 180.);
@@ -124,7 +156,7 @@ int main() {
       Pacman(boid_vector, i, fieldwidth, fieldheight);
 
       couple gr_pos = boid_vector[i].get_pos_value();
-      gr_pos = 30 * gr_pos;
+      gr_pos = 10 * gr_pos;
       GBoid.move(gr_pos[0], gr_pos[1]);
 
       GBoid.draw(sky);

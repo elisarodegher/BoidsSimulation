@@ -1,5 +1,5 @@
 #include "boids.hpp"
-
+//MEMBRI DELLA CLASSE BOID
 bds::boid::boid(couple p, couple s) : pos_{p}, vel_{s} {}
 
 void bds::boid::vel_mod(couple s) {
@@ -21,7 +21,7 @@ double bds::boid::get_angle() const {
   return angle;
 }
 
-
+//MEMBRI DELLA CLASSE "VENTO"
 bds::wind::wind(double intensity, double angle) : intensity_{intensity}, angle_{angle} {}
 
 void bds::wind::rotate(double rot_ang) {
@@ -37,7 +37,8 @@ couple bds::wind::get_coordinates() {
 
 double bds::wind::get_angle_rad() { return angle_; }
 
-/* FUNZIONI LIBERE */
+//FUNZIONI LIBERE
+
 void bds::periodize(couple& pos, double perx, double pery) {
   if ((pos[0]) > (fabs(perx) / 2)) {
     pos[0] -= perx;

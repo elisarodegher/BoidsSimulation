@@ -50,6 +50,4 @@ namespace bds
 
 
 //impostare una buona interfaccia utente
-//curare i nomi delle funzioni
-//curare il vento (o toglierlo)
 //mettere il pigreco vero 

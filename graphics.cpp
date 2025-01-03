@@ -52,8 +52,8 @@ bds::GraphicWind::GraphicWind(wind w) : wind_line{sf::RectangleShape(sf::Vector2
     wind_line.setFillColor(sf::Color::Blue);
     wind_arrow.setFillColor(sf::Color::Red);
 
-    wind_line.setRotation(to_degrees(w.get_angle_rad()));
-    wind_arrow.setRotation(to_degrees(w.get_angle_rad()));
+    wind_line.setRotation(static_cast<float>(to_degrees(w.get_angle_rad())));
+    wind_arrow.setRotation(static_cast<float>(to_degrees(w.get_angle_rad())));
 }
 
 void bds::GraphicWind::draw(sf::RenderWindow& window) {
