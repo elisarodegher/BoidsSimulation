@@ -163,7 +163,8 @@ int main() {
     }
 
     sf::RectangleShape wind_panel(sf::Vector2f(70.f, 70.f));
-    wind_panel.setFillColor(sf::Color::Green);
+    sf::Color lightGreen(167, 250, 154);
+    wind_panel.setFillColor(lightGreen);
     sky.draw(wind_panel);
 
     bds::GraphicWind GWind{b_wind};
