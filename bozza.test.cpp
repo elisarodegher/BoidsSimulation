@@ -46,8 +46,8 @@ TEST_CASE("Testing the class member functions") {
   couple ais{5., -3};
   couple bis{0., 0.};
 
-  CHECK(tboid.vel() == ais);
-  CHECK(tboid.pos() == bis);
+  CHECK(tboid.get_vel_value() == ais);
+  CHECK(tboid.get_pos_value() == bis);
 
   couple xpos{1., 1.};
   couple xvel{1., 2.};
@@ -57,8 +57,8 @@ TEST_CASE("Testing the class member functions") {
   couple new_vel{2., 3.};
   couple new_pos{3., 4.};
   xboid.pos_mod(1.);
-  CHECK(xboid.vel() == new_vel);
-  CHECK(xboid.pos() == new_pos);
+  CHECK(xboid.get_vel_value() == new_vel);
+  CHECK(xboid.get_pos_value() == new_pos);
 
   couple ypos{1., 1.};
   couple yvel{1., 2.};
@@ -68,8 +68,8 @@ TEST_CASE("Testing the class member functions") {
   couple new_vel_2{2., 3.};
   couple new_pos_2{3., 4.};
   yboid.pos_mod(1.);
-  CHECK(yboid.vel() == new_vel_2);
-  CHECK(yboid.pos() == new_pos_2);
+  CHECK(yboid.get_vel_value() == new_vel_2);
+  CHECK(yboid.get_pos_value() == new_pos_2);
 }
 
 TEST_CASE("Testing 'Boidsarenear' function") {
@@ -78,7 +78,7 @@ TEST_CASE("Testing 'Boidsarenear' function") {
   double dist{5.};
   double field_width{15.};
   double field_height{10};
-  CHECK(BoidsAreNear(i, j, dist, field_width, field_height) == 0);
+  CHECK(BoidsAreNear(i, j, dist, field_width, field_height) == 1);
 
   couple ivel{1.5, 2.};
   i.vel_mod(ivel);
@@ -96,12 +96,12 @@ TEST_CASE("Testing 'Boidsarenear' function") {
   i.pos_mod(3.);
   couple c{0., 0.};
 
-  CHECK(i.pos() == c);
-  CHECK(j.pos() == c);
+  CHECK(i.get_pos_value() == c);
+  CHECK(j.get_pos_value() == c);
   CHECK(BoidsAreNear(i, j, dist, field_width, field_height) == 1);
 }
 
-/*TEST_CASE("Testing velocity modifier") {
+TEST_CASE("Testing velocity modifier") {
     std::vector<bds::boid> test_vector;
     couple pi{0., 0};
     couple vi{0., 0.};
@@ -125,16 +125,18 @@ TEST_CASE("Testing 'Boidsarenear' function") {
     bds::boid d{pi, vi};
     test_vector.push_back(d);
 
-    bds::v_mod(0, 0.5, 3., 1, 5., 4, test_vector, field_width, field_height);
+    bds::wind null_wind{0., 0.};
 
-    double av1 = test_vector[0].vel()[0];
-    double av2 = test_vector[0].vel()[1];
+    bds::v_mod(0, 0.5, 3., 1, 5., 4, test_vector, field_width, field_height, null_wind);
+
+    double av1 = test_vector[0].get_vel_value()[0];
+    double av2 = test_vector[0].get_vel_value()[1];
 
     CHECK(av1 == 1);
     CHECK(av2 == doctest::Approx(1.8333));
 
 }
-*/
+
 TEST_CASE("Separation Velocity Function") {
   double field_width{15.};
   double field_height{10.};

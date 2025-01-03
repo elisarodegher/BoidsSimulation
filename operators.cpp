@@ -28,3 +28,13 @@ void operator+=(couple &add1, couple const &add2) { add1 = add1 + add2; }
 void operator-=(couple &add1, couple const &add2) { add1 = add1 - add2; }
 
 void operator*=(couple &add0, double mult) { add0 = (mult * add0); }
+
+double to_degrees(double ang_rad) {
+  double ang_deg = (ang_rad * 180) / 3.1415;
+  return ang_deg; 
+}
+
+double to_radians(double ang_deg) {
+  double ang_rad = (ang_deg * 3.1415) / 180;
+  return ang_deg;
+}

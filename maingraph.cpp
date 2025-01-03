@@ -17,11 +17,11 @@ int main() {
   double time_interval;
   double time_check;
 
-  n_boids = 100;
-  dist_vic = 6.;
-  sep_dist = 0.5;
-  sep_fact = 0.3;
-  align_fact = 0.09;
+  n_boids = 300;
+  dist_vic = 1.;
+  sep_dist = 0.1;
+  sep_fact = 0.09;
+  align_fact = 0.009;
   coes_fact = 0.009;
   time_interval = 60;
   time_check = 5.;
@@ -44,11 +44,9 @@ int main() {
   seconds. Please insert the number of seconds between each print: \n"; std::cin
   >> time_check;
   */
-  // esisterà un modo più elegante per fare le domande all'utente? compilazione
-  // di una tabella nella parte grafica?
 
   std::default_random_engine eng(static_cast<lu_int>(std::time(nullptr)));
-  std::uniform_real_distribution<double> dist(0., 2.);
+  std::uniform_real_distribution<double> dist(-10., 10.);
 
   std::vector<bds::boid> boid_vector;
   couple p;
@@ -61,21 +59,24 @@ int main() {
     boid_vector.push_back({p, s});
   }
 
-  // controllare che non ci siano boids uguali
+  bds::wind b_wind{0.0, 0.};
 
   double fieldwidth{30.};
   double fieldheight{20.};
   double Deltat{0.025};
 
+
   sf::RenderWindow sky(sf::VideoMode(900, 600), "boidsgraphic",
                        sf::Style::Default);
-  sky.setFramerateLimit(
-      40);  // questo frame dovrebbe sincronizzarsi col tempo di calcolo
+  sky.setFramerateLimit( static_cast<unsigned int>(
+      1 / Deltat));
   sf::Clock clock;
   sf::Clock stat_clock;
+  sf::Clock wind_clock;
   // conversion width-height rate to window: 60
 
   while (sky.isOpen()) {
+    //EVENTS AND TIME MANAGING
     sf::Event event;
     while (sky.pollEvent(event)) {
       if (event.type == sf::Event::Closed) {
@@ -97,30 +98,44 @@ int main() {
       stat_clock.restart();
     }
 
+    
+    
+    if (wind_clock.getElapsedTime().asSeconds() >= 9) {
+    std::random_device wind_mod;
+    std::default_random_engine eng2(wind_mod());
+    std::uniform_real_distribution<double> wind_rotations(-180., 180.);
+    double wind_angle = wind_rotations(eng);
+    b_wind.rotate(to_radians(wind_angle));
+    wind_clock.restart();
+    }
+    // DRAWING
     sky.clear(sf::Color(135, 206, 235));
 
     for (lu_int i = 0; i < boid_vector.size(); ++i) {
-      bds::GraphicBoids boid{};
-      boid.setPosition(450., 300.);
+      bds::GraphicBoids GBoid{};
+      GBoid.setPosition(450., 300.);
 
       v_mod(i, sep_fact, sep_dist, align_fact, dist_vic, coes_fact, boid_vector,
-            fieldwidth, fieldheight);
-      double angle_rad = boid_vector[i].get_angle();
-      double angle_deg = angle_rad * (180 / 3.1415);
-      boid.rotate(angle_deg);
+            fieldwidth, fieldheight, b_wind);
+      GBoid.rotate(to_degrees(boid_vector[i].get_angle()));
 
       p_mod(i, boid_vector, Deltat);
       Pacman(boid_vector, i, fieldwidth, fieldheight);
 
-      couple gr_pos = boid_vector[i].pos();
+      couple gr_pos = boid_vector[i].get_pos_value();
       gr_pos = 30 * gr_pos;
-      boid.move(gr_pos[0], gr_pos[1]);
+      GBoid.move(gr_pos[0], gr_pos[1]);
 
-      boid.draw(sky);
+      GBoid.draw(sky);
     }
+
+    bds::GraphicWind GWind{b_wind};
+    GWind.draw(sky);
 
     sky.display();
   }
+
+  //FINAL STATISTICS
 
   if (bds::GetMeanVelocity(boid_vector) > std::numeric_limits<double>::max()) {
     std::cout << "velocità troppo alta" << '\n';

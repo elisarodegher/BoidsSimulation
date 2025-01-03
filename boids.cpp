@@ -3,37 +3,39 @@
 bds::boid::boid(couple p, couple s) : pos_{p}, vel_{s} {}
 
 void bds::boid::vel_mod(couple s) {
-  vel_ += s;  // si dovrebbe implementare l'operatore +=, credo che a giacomini
-              // piaccia
-}  // modifica la velocità dato in input un array di "modifica" chiamato "s";
-   // vel_ è un membro privato della classe boid.
+  vel_ += s;  
+}  
 
 void bds::boid::pos_mod(double deltat) {
   pos_ += (deltat * vel_);
-}  // modifica la posizione, i parametri di velocità sono presi dal corpo della
-   // funzione; la posizione non può essere (per come è messa ora) modificata a
-   // piacere
-// posizione viene modificata aggiungendo la velocità moltiplicata per delta t
-// (tempo) assert sono da inserire nel ciclo for e nel costruttore
+}  
 void bds::boid::pos_mod(couple p) { pos_ += p; }
 
-couple bds::boid::pos() const { return pos_; }
-couple bds::boid::vel() const { return vel_; }
-couple& bds::boid::get_pos() {
+couple bds::boid::get_pos_value() const { return pos_; }
+couple bds::boid::get_vel_value() const { return vel_; }
+couple& bds::boid::get_pos_ref() {
   return pos_;
-}  // funzioni che uso per cavare fuori velocità e posizione dal boid
+} 
 double bds::boid::get_angle() const {
   double angle = atan2(vel_[1], vel_[0]);
   return angle;
 }
-bool bds::operator==(boid i, boid j) {
-  return (i.pos() == j.pos() && i.vel() == j.vel());
-}
-bool bds::operator!=(boid i, boid j) {
-  return (i.pos() != j.pos() || i.vel() != j.vel());
+
+
+bds::wind::wind(double intensity, double angle) : intensity_{intensity}, angle_{angle} {}
+
+void bds::wind::rotate(double rot_ang) {
+    angle_ += rot_ang;
 }
 
-// capire se sono utili o no
+couple bds::wind::get_coordinates() {
+    double x_comp = intensity_ * cos(angle_);
+    double y_comp = intensity_ * sin(angle_);
+    couple comp{x_comp, y_comp};
+    return comp;
+}
+
+double bds::wind::get_angle_rad() { return angle_; }
 
 /* FUNZIONI LIBERE */
 void bds::periodize(couple& pos, double perx, double pery) {
@@ -59,7 +61,7 @@ bool bds::BoidsAreNear(bds::boid i, bds::boid j, double dist,
     return 0;
   }
 
-  couple diff = (i.pos() - j.pos());
+  couple diff = (i.get_pos_value() - j.get_pos_value());
   periodize(diff, field_width, field_height);
 
   double diffdist = squaresum(diff);
@@ -67,15 +69,15 @@ bool bds::BoidsAreNear(bds::boid i, bds::boid j, double dist,
 }
 
 couple bds::v_separation(lu_int i, double sep_dist, double sep_fact,
-                         std::vector<boid> boid_vector, double field_width,
+                         const std::vector<boid>& boid_vector, double field_width,
                          double field_height) {
-  boid& i_boid = boid_vector[i];
+  boid i_boid = boid_vector[i];
   couple v_sep;
   v_sep = std::accumulate(
       boid_vector.begin(), boid_vector.end(), couple{0., 0.},
-      [&](couple& rel, boid& j_boid) {
+      [&](couple& rel, const boid& j_boid) {
         if (BoidsAreNear(i_boid, j_boid, sep_dist, field_width, field_height)) {
-          couple diff = (j_boid.pos() - i_boid.pos());
+          couple diff = (j_boid.get_pos_value() - i_boid.get_pos_value());
           periodize(diff, field_width, field_height);
           rel += diff;
         }
@@ -87,18 +89,18 @@ couple bds::v_separation(lu_int i, double sep_dist, double sep_fact,
 }
 
 couple bds::v_alignment(lu_int i, double alig_fact,
-                        std::vector<boid> boid_vector) {
+                        const std::vector<boid>& boid_vector) {
   couple v_alig;
   assert(i < boid_vector.size());
 
-  boid& i_boid = boid_vector[i];
+  boid i_boid = boid_vector[i];
 
   v_alig = std::accumulate(
       boid_vector.begin(), boid_vector.end(), couple{0., 0.},
-      [&](couple& rvel, boid& j_boid) {
+      [&](couple& rvel, const boid& j_boid) {
         if (&i_boid !=
             &j_boid) {  // capire se va bene come condizione di uguaglianza
-          rvel += j_boid.vel();
+          rvel += j_boid.get_vel_value();
         }
         return rvel;
       });
@@ -107,27 +109,29 @@ couple bds::v_alignment(lu_int i, double alig_fact,
     v_alig = {0., 0.};
   } else {
     v_alig *= (1. / static_cast<double>(boid_vector.size() - 1));
-    v_alig -= i_boid.vel();
+    v_alig -= i_boid.get_vel_value();
     v_alig *= alig_fact;
   }
   return v_alig;
 }
 
 couple bds::v_coesion(lu_int i, double dist_vic, double coes_fact,
-                      std::vector<boid> boid_vector, double field_width,
+                      const std::vector<boid>& boid_vector, double field_width,
                       double field_height) {
   couple c_mass;
   assert(i < boid_vector.size());
 
-  boid& i_boid = boid_vector[i];
+  boid i_boid = boid_vector[i];
   int near_boids{1};
 
   c_mass = std::accumulate(
       boid_vector.begin(), boid_vector.end(), couple{0., 0.},
-      [&](couple& cm, boid& j_boid) {
+      [&](couple& cm, const boid& j_boid) {
         if (BoidsAreNear(i_boid, j_boid, dist_vic, field_width, field_height)) {
-          cm += j_boid.pos();
-          ++near_boids;
+            couple diff = j_boid.get_pos_value() - i_boid.get_pos_value();
+            periodize(diff, field_width, field_height);
+            cm += (i_boid.get_pos_value() + diff);
+            ++near_boids;
         }
         return cm;
       });
@@ -137,7 +141,7 @@ couple bds::v_coesion(lu_int i, double dist_vic, double coes_fact,
     return v_coes;
   } else {
     c_mass *= (1. / static_cast<double>(near_boids - 1));
-    c_mass -= i_boid.pos();
+    c_mass -= i_boid.get_pos_value();
     v_coes = coes_fact * c_mass;
     return v_coes;
   }
@@ -154,22 +158,29 @@ couple bds::v_random(double rndm_mod) {
   v_rndm[1] =
       rndm_mod *
       sin(angle(
-          eng));  // da capire se ha senso metterla in relazione alle altre
-
+          eng)); 
   return v_rndm;
+}
+
+couple bds::v_wind(wind i_wind) {
+    couple v_wind = 0.2 * i_wind.get_coordinates();
+    return v_wind;
 }
 
 void bds::v_mod(lu_int i, double sep_fact, double sep_dist, double alig_fact,
                 double dist_vic, double coes_fact,
                 std::vector<boid>& boid_vector, double field_width,
-                double field_height) {
+                double field_height, wind gen_wind) {
   couple v_mod =
       v_separation(i, sep_dist, sep_fact, boid_vector, field_width,
                    field_height) +
       v_alignment(i, alig_fact, boid_vector) +
       v_coesion(i, dist_vic, coes_fact, boid_vector, field_width, field_height);
-  double rndm_mod = sqrt(squaresum(v_mod)) / 10;
-  v_mod += v_random(rndm_mod);
+  v_mod += v_random(0.3);
+  v_mod += v_wind(gen_wind);
+  if (squaresum(v_mod) > 1000) {
+    v_mod *= 0.75;
+  }
   boid_vector[i].vel_mod(v_mod);
 }
 void bds::p_mod(lu_int i, std::vector<boid>& boid_vector, double deltat) {
@@ -178,7 +189,7 @@ void bds::p_mod(lu_int i, std::vector<boid>& boid_vector, double deltat) {
 
 void bds::Pacman(std::vector<bds::boid>& boid_vector, lu_int i,
                  double field_width, double field_height) {
-  periodize(boid_vector[i].get_pos(), field_width, field_height);
+  periodize(boid_vector[i].get_pos_ref(), field_width, field_height);
 }
 
 bds::GraphicBoids::GraphicBoids() {
@@ -217,4 +228,27 @@ void bds::GraphicBoids::setPosition(double x, double y) {
 void bds::GraphicBoids::draw(sf::RenderWindow& window) {
   window.draw(sup);
   window.draw(inf);
+}
+
+bds::GraphicWind::GraphicWind(wind w) : wind_line{sf::RectangleShape(sf::Vector2f(60., 3.))} {
+    wind_arrow.setPointCount(5);
+    wind_arrow.setPoint(0, sf::Vector2f(60.f, -1.f));
+    wind_arrow.setPoint(1, sf::Vector2f(66.f, 1.5f));
+    wind_arrow.setPoint(2, sf::Vector2f(60.f, 4.f));
+    wind_arrow.setPoint(3, sf::Vector2f(57.f, 3.f));
+    wind_arrow.setPoint(4, sf::Vector2f(57.f, 0.f));
+
+    wind_line.setOrigin(sf::Vector2f(33.f, 1.5f));
+    wind_arrow.setOrigin(sf::Vector2f(33.f, 1.5f));
+
+    wind_line.setFillColor(sf::Color::Blue);
+    wind_arrow.setFillColor(sf::Color::Blue);
+
+    wind_line.setRotation(to_degrees(w.get_angle_rad()));
+    wind_arrow.setRotation(to_degrees(w.get_angle_rad()));
+}
+
+void bds::GraphicWind::draw(sf::RenderWindow& window) {
+    window.draw(wind_line);
+    window.draw(wind_arrow);
 }

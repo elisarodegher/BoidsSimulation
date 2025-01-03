@@ -15,22 +15,33 @@ namespace bds
         void vel_mod(couple s);
         void pos_mod(double deltat);
         void pos_mod(couple p);
-        couple pos() const;
-        couple vel() const; 
+        couple get_pos_value() const;
+        couple get_vel_value() const; 
         double get_angle() const;
-        couple& get_pos();// funzioni che uso per cavare fuori velocità e posizione dal boid
+        couple& get_pos_ref();// funzioni che uso per cavare fuori velocità e posizione dal boid
     };
-    bool operator==(boid i, boid j);
-    bool operator!=(boid i, boid j);
+
+    class wind {
+        private:
+        double intensity_;
+        double angle_;
+        public:
+        wind(double intensity, double angle);
+
+        void rotate(double rot_ang);
+        couple get_coordinates();
+        double get_angle_rad();
+    };
 
     void periodize(couple& pos, double perx, double pery);
     bool BoidsAreNear(boid i, boid j, double dist, double field_width, double field_height);
 
-    couple v_separation(lu_int i, double sep_dist, double sep_fact, std::vector<boid> boid_vector,double field_width, double field_height);
-    couple v_alignment(lu_int i, double alig_fact, std::vector<boid> boid_vector);
-    couple v_coesion(lu_int i, double dist_vic, double coes_fact, std::vector<boid> boid_vector,double field_width, double field_height);
+    couple v_separation(lu_int i, double sep_dist, double sep_fact, const std::vector<boid>& boid_vector,double field_width, double field_height);
+    couple v_alignment(lu_int i, double alig_fact, const std::vector<boid>& boid_vector);
+    couple v_coesion(lu_int i, double dist_vic, double coes_fact, const std::vector<boid>& boid_vector,double field_width, double field_height);
     couple v_random(double rndm_mod);
-    void v_mod(lu_int i, double sep_fact, double sep_dist, double alig_fact, double dist_vic, double coes_fact, std::vector<boid> &boid_vector, double field_width, double field_height);
+    couple v_wind(wind i_wind);
+    void v_mod(lu_int i, double sep_fact, double sep_dist, double alig_fact, double dist_vic, double coes_fact, std::vector<boid> &boid_vector, double field_width, double field_height, wind gen_wind);
     void p_mod(lu_int i, std::vector<boid>& boid_vector, double deltat);
     
     void Pacman(std::vector<bds::boid> &boid_vector, lu_int i, double field_width, double field_height);
@@ -48,6 +59,20 @@ namespace bds
         void draw(sf::RenderWindow& window);
 
     };
-}
 
-//AGGIUNGERE CLANG FORMAT
+    class GraphicWind {
+        private:
+        sf::RectangleShape wind_line;
+        sf::ConvexShape wind_arrow;
+
+        public:
+        GraphicWind(wind w);
+        void draw(sf::RenderWindow& window);
+    };
+};
+
+//risolvere problemi nei test (lacrime)
+//impostare una buona interfaccia utente
+//curare l'uniformità dei test
+//curare i nomi delle funzioni
+//curare il vento (o toglierlo)
