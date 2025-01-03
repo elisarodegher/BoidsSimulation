@@ -25,15 +25,15 @@ int main() {
   char yn_answer;
 
   n_boids = 150;
-  dist_vic = 20.; //range 15-45
-  sep_dist = 2.; //range 1-8
-  sep_fact = 0.5; //range 0.5 - 1
-  align_fact = 0.01; //range 0.01 - 0.1
-  coes_fact = 0.004; //range 0.001 - 0.01
+  dist_vic = 7.;
+  sep_dist = 0.1;
+  sep_fact = 1;
+  align_fact = 0.01; //range 0.01 - 0.2
+  coes_fact = 0.1; //range 0.005 - 0.1
   time_interval = 60;
   time_check = 5.; 
-  rndm_mod = 0.5;
-  wind_intensity = 1;
+  rndm_mod = 0;
+  wind_intensity = 0;
   wind_time = 3;
   
   //USER INTERFACE
@@ -80,14 +80,14 @@ int main() {
   //BOIDS INIZIALIZATION
 
   std::default_random_engine eng(static_cast<lu_int>(std::time(nullptr)));
-  std::uniform_real_distribution<double> dist(-60., 60.);
+  std::uniform_real_distribution<double> dist(-30., 30.);
 
   std::vector<bds::boid> boid_vector;
   couple p;
   couple s;
 
   for (lu_int i = 0; i != n_boids; ++i) {
-    p = {3 * dist(eng), 2 * dist(eng)};
+    p = {2 * dist(eng), 3 * dist(eng)};
     s = {dist(eng), dist(eng)};
 
     boid_vector.push_back({p, s});
@@ -95,8 +95,8 @@ int main() {
 
   bds::wind b_wind{wind_intensity, 0.};
 
-  double fieldwidth{180.};
-  double fieldheight{120.};
+  double fieldwidth{90.};
+  double fieldheight{60.};
   double Deltat{0.025};
 
   //GRAPHIC INIZIALIZATION
@@ -108,7 +108,7 @@ int main() {
   sf::Clock clock;
   sf::Clock stat_clock;
   sf::Clock wind_clock;
-  // conversion width-height rate to window pixel number: 5
+  // conversion width-height rate to window: 10
 
   while (sky.isOpen()) {
     //EVENTS AND TIME MANAGING
@@ -156,7 +156,7 @@ int main() {
       Pacman(boid_vector, i, fieldwidth, fieldheight);
 
       couple gr_pos = boid_vector[i].get_pos_value();
-      gr_pos = 5 * gr_pos;
+      gr_pos = 10 * gr_pos;
       GBoid.move(gr_pos[0], gr_pos[1]);
 
       GBoid.draw(sky);

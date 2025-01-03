@@ -1,75 +1,68 @@
 #include "statistics.hpp"
 
 double bds::GetMeanDistance(std::vector<boid> boid_vector) {
-  double dist_sum{0.};
-  int n_events{0};
+if (boid_vector.size() <= 1) {
+        return 0.;
+    }
 
-  dist_sum = std::accumulate(
-      boid_vector.begin(), boid_vector.end(), double{0.},
-      [&](double& d_s, boid& i_boid) {
-        double local_sum = std::accumulate(
-            boid_vector.begin(), boid_vector.end(), double{0.},
-            [&](double& ds, boid& j_boid) {
-              ds += sqrt(squaresum(i_boid.get_pos_value() - j_boid.get_pos_value()));
-              ++n_events;
-              return ds;
-            });
-        return d_s + local_sum;
-      });
+    double dist_sum = 0.;
+    int n_events = 0;
 
-  dist_sum = dist_sum / 2;  
-  double meandist = dist_sum / n_events;
-  return meandist;
+    for (size_t i = 0; i < boid_vector.size(); ++i) {
+        for (size_t j = i + 1; j < boid_vector.size(); ++j) {
+            dist_sum += sqrt(squaresum(boid_vector[i].get_pos_value() - boid_vector[j].get_pos_value()));
+            ++n_events;
+        }
+    }
+
+    return dist_sum / n_events;
 }
 
 double bds::GetMeanVelocity(std::vector<boid> boid_vector) {
-  double vel_sum{0.};
+    if (boid_vector.empty()) {
+        return 0.;
+    }
 
-  vel_sum = std::accumulate(boid_vector.begin(), boid_vector.end(), double{0.},
-                            [&](double& vs, boid& i_boid) {
-                              vs += sqrt(squaresum(i_boid.get_vel_value()));
-                              return vs;
-                            });
+    double vel_sum = 0.;
+    for (const auto& boid : boid_vector) {
+        vel_sum += sqrt(squaresum(boid.get_vel_value()));
+    }
 
-  double meanvel = vel_sum / static_cast<double>(boid_vector.size());
-  return meanvel;
+    return vel_sum / boid_vector.size();
 }
 
 double bds::GetStdDevDistance(std::vector<boid> boid_vector) {
-  double meandist = GetMeanDistance(boid_vector);
-  double sum = std::accumulate(
-      boid_vector.begin(), boid_vector.end(), double{0.},
-      [&](double& pass_sum, boid& i_boid) {
-        double local_sum = std::accumulate(
-            boid_vector.begin(), boid_vector.end(), double{0.},
-            [&](double& dm, boid& j_boid) {
-              dm = (sqrt(squaresum(i_boid.get_pos_value() - j_boid.get_pos_value())) - meandist);
-              dm *= dm;
-              return dm;
-            });
-        pass_sum += local_sum;
-        return pass_sum;
-      });
-  
-  double stddev =
-      sqrt(sum / (static_cast<double>(boid_vector.size()) *
-                  (static_cast<double>(boid_vector.size()) - 1) * 2));
-  return stddev;
+  if (boid_vector.size() <= 1) {
+        return 0.;
+    }
+
+    double meandist = GetMeanDistance(boid_vector);
+    double sum = 0.;
+    int n_events = 0;
+
+    for (size_t i = 0; i < boid_vector.size(); ++i) {
+        for (size_t j = i + 1; j < boid_vector.size(); ++j) {
+            double dist = sqrt(squaresum(boid_vector[i].get_pos_value() - boid_vector[j].get_pos_value()));
+            sum += (dist - meandist) * (dist - meandist);
+            ++n_events;
+        }
+    }
+
+    return sqrt(sum / n_events);
 } 
 
 double bds::GetStdDevVelocity(std::vector<boid> boid_vector) {
-  double meanvel = GetMeanVelocity(boid_vector);
-  double sum;
+  if (boid_vector.size() <= 1) {
+        return 0.;
+    }
 
-  sum = std::accumulate(boid_vector.begin(), boid_vector.end(), double{0.},
-                        [&](double& sm, boid& i_boid) {
-                          sm = (sqrt(squaresum(i_boid.get_vel_value())) - meanvel);
-                          sm *= sm;
-                          return sm;
-                        });
+    double meanvel = GetMeanVelocity(boid_vector);
+    double sum = std::accumulate(
+        boid_vector.begin(), boid_vector.end(), 0.0,
+        [meanvel](double sm, const boid& i_boid) {
+            double diff = sqrt(squaresum(i_boid.get_vel_value())) - meanvel;
+            return sm + diff * diff;
+        });
 
-  double stddev =
-      sqrt(sum / (static_cast<double>(boid_vector.size()) *
-                  (static_cast<double>(boid_vector.size()) - 1) * 2));
-  return stddev;
+    return sqrt(sum / (boid_vector.size() - 1));
 }  

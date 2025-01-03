@@ -423,19 +423,46 @@ TEST_CASE("Operators.cpp functions") {
 
 TEST_CASE("statistics.cpp functions") {
   std::vector<bds::boid> test_vector;
-  int numboid{5};
 
-  std::vector<couple> pos_vector = {{1., 2.5},  {3., 1.2}, {6., 4.},
-                                    {5., 3.5}, {4.6, 6.9} };
-  std::vector<couple> vel_vector = {{4., 5.1},  {4., 6.},  {1.2, 5.3},
-                                    {4.1, 1.}, {3.7, 2.6} };
+  bds::boid a{{1., 2.5}, {4., 5.1}};
+  bds::boid b{{3., 1.2}, {4., 6.}};
+  bds::boid c{{6., 4}, {1.2, 5.3}};
+  bds::boid d{{5., 3.5}, {4.1, 1.}};
+  bds::boid e{{4.6, 6.9}, {3.7, 2.6}};
 
-  for (int i = 0; i < numboid; ++i) {
-    test_vector[i] = {pos_vector[i], vel_vector[i]};
+  test_vector.push_back(a);
+  test_vector.push_back(b);
+  test_vector.push_back(c);
+  test_vector.push_back(d);
+  test_vector.push_back(e);
+
+  CHECK(bds::GetMeanDistance(test_vector) == doctest::Approx(3.73).epsilon(0.05));
+  CHECK(bds::GetMeanVelocity(test_vector) == doctest::Approx(5.57).epsilon(0.05));
+  CHECK(bds::GetStdDevDistance(test_vector) == doctest::Approx(1.77).epsilon(0.05));
+  CHECK(bds::GetStdDevVelocity(test_vector) == doctest::Approx(1.45).epsilon(0.05));
+
+  SUBCASE("Test with 1 boid") {
+    bds::boid boid{{0., 0.}, {0., 0.}};
+    std::vector<bds::boid> once_vector;
+    once_vector.push_back(boid);
+
+    CHECK(bds::GetMeanDistance(once_vector) == 0.);
+    CHECK(bds::GetMeanVelocity(once_vector) == 0.);
+    CHECK(bds::GetStdDevDistance(once_vector) == 0.);
+    CHECK(bds::GetStdDevVelocity(once_vector) == 0.);
   }
 
-  CHECK(bds::GetMeanDistance(test_vector) == doctest::Approx(3.03).epsilon(0.02));
-  CHECK(bds::GetMeanVelocity(test_vector) == doctest::Approx(6.38).epsilon(0.02));
-  CHECK(bds::GetStdDevDistance(test_vector) == doctest::Approx(1.77).epsilon(0.02));
-  CHECK(bds::GetStdDevVelocity(test_vector) == doctest::Approx(1.99).epsilon(0.02));
+  SUBCASE("Test with boids at the same velocity") {
+    bds::boid a{{0., 0.}, {3., 4.}};
+    bds::boid b{{0., 1.}, {3., 4.}};
+    bds::boid c{{0., 2.}, {3., 4.}};
+
+    std::vector<bds::boid> vel_vector;
+    vel_vector.push_back(a);
+    vel_vector.push_back(b);
+    vel_vector.push_back(c);
+
+    CHECK(bds::GetMeanVelocity(vel_vector) == 5);
+    CHECK(bds::GetStdDevVelocity(vel_vector) == 0.);
+  }
 }
