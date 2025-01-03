@@ -1,4 +1,5 @@
 #include <vector>
+#include "boids.hpp"
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 #include "statistics.hpp"
@@ -423,16 +424,21 @@ TEST_CASE("Operators.cpp functions") {
 
 TEST_CASE("statistics.cpp functions") {
   std::vector<bds::boid> test_vector;
-  int numboid{5};
 
-  std::vector<couple> pos_vector = {{1., 2.5},  {3., 1.2}, {6., 4.},
-                                    {5., 3.5}, {4.6, 6.9} };
-  std::vector<couple> vel_vector = {{4., 5.1},  {4., 6.},  {1.2, 5.3},
-                                    {4.1, 1.}, {3.7, 2.6} };
+    bds::boid a{{1., 2.5}, {4., 5.1}};
+    test_vector.push_back(a);
 
-  for (int i = 0; i < numboid; ++i) {
-    test_vector[i] = {pos_vector[i], vel_vector[i]};
-  }
+    bds::boid b{{3., 1.2}, {4., 6.}};
+    test_vector.push_back(b);
+
+    bds::boid c{{6., 4.}, {1.2, 5.3}};
+    test_vector.push_back(c);
+
+    bds::boid d{{5., 3.5}, {4.1, 1.}};
+    test_vector.push_back(d);
+
+    bds::boid e{{4.6, 6.9}, {3.7, 2.6}};
+    test_vector.push_back(e);
 
   CHECK(bds::GetMeanDistance(test_vector) == doctest::Approx(3.03).epsilon(0.02));
   CHECK(bds::GetMeanVelocity(test_vector) == doctest::Approx(6.38).epsilon(0.02));
