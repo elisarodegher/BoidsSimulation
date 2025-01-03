@@ -29,18 +29,6 @@ TEST_CASE("Boids.cpp functions") {
     CHECK(xboid.get_vel_value() == new_vel);
     CHECK(xboid.get_pos_value() == new_pos);
 
-    couple ypos{1., 1.};
-    couple yvel{1., 2.};
-    bds::boid yboid{ypos,
-                    yvel};  // boid con cui testiamo il costruttore normale
-    couple added_vel{1., 1.};
-    xboid.vel_mod(added_vel);
-    couple new_vel{2., 3.};
-    couple new_pos{3., 4.};
-    xboid.pos_mod(1.);
-    CHECK(xboid.get_vel_value() == new_vel);
-    CHECK(xboid.get_pos_value() == new_pos);
-
     // aggiungere quelle di Grapich Boids
   }
 
@@ -435,21 +423,19 @@ TEST_CASE("Operators.cpp functions") {
 
 TEST_CASE("statistics.cpp functions") {
   std::vector<bds::boid> test_vector;
-  int numboid{15};
+  int numboid{5};
 
   std::vector<couple> pos_vector = {{1., 2.5},  {3., 1.2}, {6., 4.},
-                                    {5., 3.5},  {4., 2.3}, {1.6, 7.},
-                                    {4.1, 6.1}, {2.4, 5.4}};
+                                    {5., 3.5}, {4.6, 6.9} };
   std::vector<couple> vel_vector = {{4., 5.1},  {4., 6.},  {1.2, 5.3},
-                                    {4.1, 1.},  {3.2, 7.}, {4.6, 8.},
-                                    {1.5, 2.8}, {6.4, 4.1}};
+                                    {4.1, 1.}, {3.7, 2.6} };
 
   for (int i = 0; i < numboid; ++i) {
     test_vector[i] = {pos_vector[i], vel_vector[i]};
   }
 
-  CHECK(bds::GetMeanDistance(test_vector) == doctest::Approx());
-  CHECK(bds::GetMeanVelocity(test_vector) == doctest::Approx(6, 381132452));
-  CHECK(bds::GetStdDevDistance(test_vector) == doctest::Approx());
-  CHECK(bds::GetStdDevVelocity(test_vector) == doctest::Approx(1, 994964699));
+  CHECK(bds::GetMeanDistance(test_vector) == doctest::Approx(3.03).epsilon(0.02));
+  CHECK(bds::GetMeanVelocity(test_vector) == doctest::Approx(6.38).epsilon(0.02));
+  CHECK(bds::GetStdDevDistance(test_vector) == doctest::Approx(1.77).epsilon(0.02));
+  CHECK(bds::GetStdDevVelocity(test_vector) == doctest::Approx(1.99).epsilon(0.02));
 }

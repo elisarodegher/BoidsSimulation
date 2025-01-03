@@ -1,3 +1,5 @@
+#ifndef STATISTICS_HPP
+#define STATISTICS_HPP
 #include "graphics.hpp"
 
 namespace bds {
@@ -6,3 +8,4 @@ namespace bds {
     double GetStdDevDistance(std::vector<boid> boid_vector);
     double GetStdDevVelocity(std::vector<boid> boid_vector);
 }
+#endif
